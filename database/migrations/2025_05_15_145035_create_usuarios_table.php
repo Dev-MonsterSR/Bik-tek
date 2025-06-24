@@ -13,6 +13,8 @@ class CreateUsuariosTable extends Migration
             $table->id('id_usuario');
             $table->string('nombre', 100);
             $table->string('apellido', 100)->nullable();
+            $table->string('dni', 8)->unique();
+            $table->string('codigo_estudiante', 20)->unique();
             $table->string('email', 150)->unique();
             $table->date('fecha_registro')->default(DB::raw('CURRENT_DATE'));
             $table->string('password');

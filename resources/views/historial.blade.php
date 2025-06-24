@@ -186,6 +186,7 @@
                             $clase = 'prestamo-en';
                             break;
                         case 'entregado':
+                        case 'devuelto':
                             $estadoTexto = 'Devuelto';
                             $badge = 'estado-devuelto';
                             $clase = 'prestamo-devuelto';
@@ -220,7 +221,7 @@
                 @endphp
                 <div class="card prestamo-card {{ $clase }}">
                     <div class="card-body">
-                        <img src="{{ $prestamo->libro->portada ? asset($prestamo->libro->portada) : asset('img/Libro1.jpg') }}" alt="Portada">
+                        <img src="{{ imagen_libro($prestamo->libro->portada) }}" alt="Portada">
                         <div class="prestamo-info">
                             <h5 class="mb-1">{{ $prestamo->libro->titulo }}</h5>
                             <div class="text-muted mb-1">{{ $prestamo->libro->autor }}</div>
@@ -232,7 +233,7 @@
                                     <span class="mx-2">|</span>
                                     <i class="bi bi-clock me-1"></i>
                                     {{ $diffInSeconds >= 0 ? "Quedan $dias días y $horas horas" : "$dias días y $horas horas de retraso" }}
-                                @elseif($estado === 'entregado')
+                                @elseif($estado === 'entregado' || $estado === 'devuelto')
                                     <span class="mx-2">|</span>
                                     <i class="bi bi-check-circle me-1"></i>
                                     Devuelto a tiempo

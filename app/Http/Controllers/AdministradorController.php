@@ -13,6 +13,9 @@ use App\Models\Devolucion;
 use App\Models\Sancion;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
+use Box\Spout\Writer\Common\Creator\WriterEntityFactory;
+use Box\Spout\Writer\Common\Creator\Style\StyleBuilder;
+use Box\Spout\Common\Entity\Style\Color;
 use Carbon\Carbon;
 
 class AdministradorController extends Controller
@@ -443,19 +446,124 @@ class AdministradorController extends Controller
                         ];
                     });
                 break;
+
+            case 'inventario':
+                $query = Libro::with('categoria');
+                // Para inventario, las fechas no aplican pero podemos filtrar por fecha de registro
+                if ($inicio && $fin) {
+                    $query->whereBetween('created_at', [$inicio, $fin]);
+                }
+                $resultados = $query->orderBy('titulo')
+                    ->get()
+                    ->map(function($libro) {
+                        return [
+                            'codigo' => $libro->codigo,
+                            'titulo' => $libro->titulo,
+                            'autor' => $libro->autor ?? 'No especificado',
+                            'categoria' => $libro->categoria->nombre ?? 'Sin categoría',
+                            'cantidad' => $libro->cantidad,
+                            'disponibles' => $libro->disponibles,
+                            'estado' => ucfirst($libro->estado)
+                        ];
+                    });
+                break;
         }
 
         // Si se solicita exportación
         if ($request->export) {
-            return $this->exportToCSV($resultados, $tipo);
+            $formato = $request->formato ?? 'csv';
+            $fechaInicio = $request->inicio;
+            $fechaFin = $request->fin;
+
+            return $this->exportData($resultados, $tipo, $formato, $fechaInicio, $fechaFin);
         }
 
         return response()->json(['resultados' => $resultados]);
     }
 
-    private function exportToCSV($data, $tipo)
+    private function exportData($data, $tipo, $formato = 'csv', $fechaInicio = null, $fechaFin = null)
     {
-        $filename = "reporte_{$tipo}_" . date('Y-m-d') . ".csv";
+        $fechaTexto = '';
+        if ($fechaInicio && $fechaFin) {
+            $fechaTexto = "_desde_{$fechaInicio}_hasta_{$fechaFin}";
+        } elseif ($fechaInicio) {
+            $fechaTexto = "_desde_{$fechaInicio}";
+        } elseif ($fechaFin) {
+            $fechaTexto = "_hasta_{$fechaFin}";
+        }
+
+        $filename = "reporte_{$tipo}" . $fechaTexto . "_" . date('Y-m-d');
+
+        if ($formato === 'excel') {
+            return $this->exportToExcel($data, $tipo, $filename);
+        } else {
+            return $this->exportToCSV($data, $tipo, $filename);
+        }
+    }
+
+    private function exportToExcel($data, $tipo, $filename)
+    {
+        try {
+            $filename .= '.xlsx';
+
+            $writer = \Box\Spout\Writer\Common\Creator\WriterEntityFactory::createXLSXWriter();
+
+            // Configurar archivo temporal
+            $tempFile = tempnam(sys_get_temp_dir(), 'excel_export');
+            $writer->openToFile($tempFile);
+
+            // Crear encabezados según tipo con formato
+            $headers = $this->getReportHeaders($tipo);
+            $headerRow = \Box\Spout\Writer\Common\Creator\WriterEntityFactory::createRowFromArray($headers);
+
+            // Aplicar estilo a los encabezados
+            $headerStyle = (new StyleBuilder())
+                ->setFontBold()
+                ->setBackgroundColor('E6E6E6')
+                ->build();
+            $headerRow->setStyle($headerStyle);
+
+            $writer->addRow($headerRow);
+
+            // Agregar datos
+            foreach ($data as $index => $row) {
+                $rowData = [$index + 1];
+                foreach ($row as $value) {
+                    // Formatear fechas si es necesario
+                    if (is_string($value) && preg_match('/^\d{4}-\d{2}-\d{2}/', $value)) {
+                        $rowData[] = date('d/m/Y', strtotime($value));
+                    } else {
+                        $rowData[] = $value;
+                    }
+                }
+
+                $dataRow = \Box\Spout\Writer\Common\Creator\WriterEntityFactory::createRowFromArray($rowData);
+                $writer->addRow($dataRow);
+            }
+
+            $writer->close();
+
+            // Configurar headers para descarga
+            $headers = [
+                'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                'Content-Disposition' => "attachment; filename=\"{$filename}\"",
+                'Content-Length' => filesize($tempFile),
+            ];
+
+            return response()->stream(function() use ($tempFile) {
+                readfile($tempFile);
+                unlink($tempFile); // Limpiar archivo temporal
+            }, 200, $headers);
+
+        } catch (\Exception $e) {
+            // Si falla Excel, fallback a CSV
+            return $this->exportToCSV($data, $tipo, $filename);
+        }
+    }
+
+    private function exportToCSV($data, $tipo, $filename)
+    {
+        $filename .= '.csv';
 
         $headers = [
             'Content-Type' => 'text/csv; charset=UTF-8',
@@ -469,23 +577,19 @@ class AdministradorController extends Controller
             fprintf($file, chr(0xEF).chr(0xBB).chr(0xBF));
 
             // Headers según tipo
-            if ($tipo === 'prestamos') {
-                fputcsv($file, ['#', 'Libro', 'Usuario', 'Fecha', 'Estado']);
-            } elseif ($tipo === 'devoluciones') {
-                fputcsv($file, ['#', 'Libro', 'Usuario', 'Fecha', 'Estado']);
-            } elseif ($tipo === 'usuarios') {
-                fputcsv($file, ['#', 'Nombre', 'Apellido', 'Email', 'Fecha']);
-            } elseif ($tipo === 'sanciones') {
-                fputcsv($file, ['#', 'Usuario', 'Días', 'Inicio', 'Fin']);
-            } elseif ($tipo === 'libros') {
-                fputcsv($file, ['#', 'Libro', 'Autor', 'Préstamos']);
-            }
+            $headers = $this->getReportHeaders($tipo);
+            fputcsv($file, $headers);
 
             // Datos
             foreach ($data as $index => $row) {
                 $csvRow = [$index + 1];
                 foreach ($row as $value) {
-                    $csvRow[] = $value;
+                    // Formatear fechas
+                    if (is_string($value) && preg_match('/^\d{4}-\d{2}-\d{2}/', $value)) {
+                        $csvRow[] = date('d/m/Y', strtotime($value));
+                    } else {
+                        $csvRow[] = $value;
+                    }
                 }
                 fputcsv($file, $csvRow);
             }
@@ -494,6 +598,26 @@ class AdministradorController extends Controller
         };
 
         return response()->stream($callback, 200, $headers);
+    }
+
+    private function getReportHeaders($tipo)
+    {
+        switch ($tipo) {
+            case 'prestamos':
+                return ['#', 'Libro', 'Usuario', 'Fecha Préstamo', 'Estado'];
+            case 'devoluciones':
+                return ['#', 'Libro', 'Usuario', 'Fecha Devolución', 'Estado'];
+            case 'usuarios':
+                return ['#', 'Nombre', 'Apellido', 'Email', 'Fecha Registro'];
+            case 'sanciones':
+                return ['#', 'Usuario', 'Días Sanción', 'Fecha Inicio', 'Fecha Fin'];
+            case 'libros':
+                return ['#', 'Libro', 'Autor', 'Préstamos Totales'];
+            case 'inventario':
+                return ['#', 'Código', 'Título', 'Autor', 'Categoría', 'Cantidad', 'Disponibles', 'Estado'];
+            default:
+                return ['#', 'Datos'];
+        }
     }
 
     public function gestionarSancion(Request $request, $accion, $id = null)
@@ -563,6 +687,73 @@ class AdministradorController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Error: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    // Método para obtener detalles de un trabajador (AJAX)
+    public function getDetallesTrabajador($id)
+    {
+        try {
+            $trabajador = Trabajador::find($id);
+
+            if (!$trabajador) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Trabajador no encontrado'
+                ], 404);
+            }
+
+            return response()->json([
+                'success' => true,
+                'trabajador' => [
+                    'id_trabajador' => $trabajador->id_trabajador,
+                    'usuario' => $trabajador->usuario,
+                    'nombre' => $trabajador->nombre,
+                    'email' => $trabajador->email,
+                    'dni' => $trabajador->dni,
+                    'telefono' => $trabajador->telefono,
+                    'direccion' => $trabajador->direccion,
+                    'fecha_registro' => $trabajador->created_at,
+                ]
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error al obtener detalles del trabajador: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    // Método para obtener detalles de un usuario (AJAX)
+    public function getDetallesUsuario($id)
+    {
+        try {
+            $usuario = Usuario::find($id);
+
+            if (!$usuario) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Usuario no encontrado'
+                ], 404);
+            }
+
+            return response()->json([
+                'success' => true,
+                'usuario' => [
+                    'id_usuario' => $usuario->id_usuario,
+                    'nombre' => $usuario->nombre,
+                    'apellido' => $usuario->apellido,
+                    'email' => $usuario->email,
+                    'dni' => $usuario->dni,
+                    'codigo_estudiante' => $usuario->codigo_estudiante,
+                    'fecha_registro' => $usuario->fecha_registro,
+                ]
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error al obtener detalles del usuario: ' . $e->getMessage()
             ], 500);
         }
     }

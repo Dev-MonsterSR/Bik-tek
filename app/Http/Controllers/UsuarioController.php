@@ -40,13 +40,24 @@ class UsuarioController extends Controller
         $request->validate([
             'nombre' => 'required|string|max:100',
             'apellido' => 'required|string|max:100',
-            'email' => 'required|email|max:150|unique:usuario,email',
+            'dni' => 'required|string|size:8|regex:/^[0-9]{8}$/|unique:usuario,dni',
+            'codigo_estudiante' => 'required|string|max:20|unique:usuario,codigo_estudiante',
+            'email' => 'required|email|max:150|unique:usuario,email|regex:/^[a-zA-Z0-9._%+-]+@tecsup\.edu\.pe$/',
             'password' => 'required|string|min:8|confirmed',
+        ], [
+            'dni.size' => 'El DNI debe tener exactamente 8 dígitos.',
+            'dni.regex' => 'El DNI debe contener solo números.',
+            'dni.unique' => 'Este DNI ya está registrado.',
+            'codigo_estudiante.unique' => 'Este código de estudiante ya está registrado.',
+            'email.regex' => 'Debes usar tu correo institucional de Tecsup (@tecsup.edu.pe).',
+            'email.unique' => 'Este correo ya está registrado.',
         ]);
 
         $usuario = new Usuario();
         $usuario->nombre = $request->nombre;
         $usuario->apellido = $request->apellido;
+        $usuario->dni = $request->dni;
+        $usuario->codigo_estudiante = $request->codigo_estudiante;
         $usuario->email = $request->email;
         $usuario->fecha_registro = now();
         $usuario->password = Hash::make($request->password);
@@ -137,7 +148,7 @@ class UsuarioController extends Controller
         $query->where(function($q) use ($estados) {
             foreach ($estados as $estado) {
                 if ($estado == 'en_prestamo') $q->orWhere('estado', 'activo');
-                if ($estado == 'devuelto') $q->orWhere('estado', 'entregado');
+                if ($estado == 'devuelto') $q->orWhere('estado', 'devuelto');
                 if ($estado == 'retrasado') $q->orWhere('estado', 'retraso');
                 if ($estado == 'pendiente') $q->orWhere('estado', 'pendiente');
                 if ($estado == 'denegado') $q->orWhere('estado', 'denegado');

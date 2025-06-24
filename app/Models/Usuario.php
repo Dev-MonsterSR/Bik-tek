@@ -17,8 +17,7 @@ class Usuario extends Authenticatable
         'apellido',
         'email',
         'dni',
-        'telefono',
-        'direccion',
+        'codigo_estudiante',
         'fecha_registro',
         'password'
     ];

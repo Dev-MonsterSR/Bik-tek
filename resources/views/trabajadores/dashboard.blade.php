@@ -84,6 +84,49 @@
             font-size: 0.8rem;
         }
 
+        /* Estilos para acordeones */
+        .accordion-item {
+            border: 1px solid #dee2e6;
+            border-radius: 0.375rem !important;
+            overflow: hidden;
+        }
+
+        .accordion-button {
+            background-color: #f8f9fa;
+            border: none;
+            padding: 1rem;
+        }
+
+        .accordion-button:not(.collapsed) {
+            background-color: #e7f1ff;
+            border-color: #86b7fe;
+        }
+
+        .accordion-button:focus {
+            box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+            border-color: #86b7fe;
+        }
+
+        .accordion-button::after {
+            flex-shrink: 0;
+            width: 1.25rem;
+            height: 1.25rem;
+            margin-left: auto;
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23212529'%3e%3cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-size: 1.25rem;
+            transition: transform 0.2s ease-in-out;
+        }
+
+        .accordion-button:not(.collapsed)::after {
+            transform: rotate(180deg);
+        }
+
+        .accordion-body {
+            padding: 1rem;
+            background-color: white;
+        }
+
         .usuario-row:hover {
             background-color: #f8f9fa;
         }
@@ -144,6 +187,109 @@
         .stats-card:hover {
             transform: translateY(-2px);
             box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.1);
+        }
+
+        /* Estilos para el acordeón de solicitudes */
+        .accordion-item {
+            border-radius: 12px;
+            border: 1px solid #e9ecef;
+            overflow: hidden;
+        }
+
+        .accordion-button {
+            background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+            border: none;
+            font-weight: 500;
+            padding: 1rem 1.25rem;
+            transition: all 0.3s ease;
+        }
+
+        .accordion-button:not(.collapsed) {
+            background: linear-gradient(135deg, #e3f2fd 0%, #f5f5f5 100%);
+            color: #0B5ED7;
+            box-shadow: none;
+        }
+
+        .accordion-button:focus {
+            box-shadow: 0 0 0 0.25rem rgba(11, 94, 215, 0.25);
+        }
+
+        .accordion-body {
+            background: #fafafa;
+            border-top: 1px solid #e9ecef;
+        }
+
+        .section-title {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding: 1rem 0;
+            border-bottom: 2px solid #e9ecef;
+        }
+
+        .section-title i {
+            font-size: 1.5rem;
+            color: #0B5ED7;
+            margin-right: 1rem;
+        }
+
+        .section-title h2 {
+            margin: 0;
+            color: #212529;
+            font-weight: 600;
+        }
+
+        .search-box {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            border: 1px solid #e9ecef;
+            box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem 2rem;
+            color: #6c757d;
+        }
+
+        .empty-state i {
+            font-size: 4rem;
+            color: #dee2e6;
+            margin-bottom: 1rem;
+        }
+
+        .card.border-warning {
+            border-color: #ffc107 !important;
+            border-width: 2px;
+        }
+
+        .card.border-info {
+            border-color: #0dcaf0 !important;
+            border-width: 2px;
+        }
+
+        .card.border-danger {
+            border-color: #dc3545 !important;
+            border-width: 2px;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .accordion-button {
+                padding: 0.75rem;
+                font-size: 0.9rem;
+            }
+
+            .section-title {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .section-title i {
+                margin-right: 0;
+                margin-bottom: 0.5rem;
+            }
         }
 
         /* Modo oscuro mejorado */
@@ -691,7 +837,6 @@
                 text-align: left;
             }
         }
-        }
 
         .book-grid {
             display: grid;
@@ -1171,330 +1316,427 @@
             <!-- Main Content -->
             <main class="col px-0 content">
 
-                <!-- Préstamos -->
+                <!-- Sección de Préstamos -->
                 <div id="panel-prestamos">
-                    <!-- Título de la sección -->
                     <div class="section-title">
                         <i class="bi bi-book"></i>
-                        <div>
-                            <span>Gestión de Préstamos</span>
-                            <p class="mb-0 fs-6 fw-normal opacity-75">Aprueba o deniega las solicitudes de préstamos pendientes</p>
-                        </div>
+                        <h2>Gestión de Préstamos</h2>
                     </div>
 
-                    <!-- Estadísticas rápidas -->
-                    <div class="row mb-3">
-                        <div class="col-md-4">
+                    <!-- Estadísticas de Préstamos -->
+                    <div class="row mb-4">
+                        <div class="col-md-3">
                             <div class="stats-card">
                                 <div class="stats-icon prestamos">
                                     <i class="bi bi-clock-history"></i>
                                 </div>
                                 <h4 class="fw-bold text-warning mb-1">{{ count($prestamos->where('estado', 'pendiente')) }}</h4>
-                                <p class="text-muted mb-0 small">Pendientes</p>
+                                <p class="text-muted mb-0 small">Préstamos Pendientes</p>
                             </div>
                         </div>
-                        <div class="col-md-4">
-                            <div class="stats-card">
-                                <div class="stats-icon" style="background: #17a2b8;">
-                                    <i class="bi bi-check-circle"></i>
-                                </div>
-                                <h4 class="fw-bold text-info mb-1">{{ count($prestamos->where('estado', 'activo')) }}</h4>
-                                <p class="text-muted mb-0 small">Activos</p>
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="stats-card">
-                                <div class="stats-icon" style="background: #dc3545;">
-                                    <i class="bi bi-calendar-x"></i>
-                                </div>
-                                <h4 class="fw-bold text-danger mb-1">{{ count($prestamos->where('estado', 'denegado')) }}</h4>
-                                <p class="text-muted mb-0 small">Denegados</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Búsqueda mejorada -->
-                    <div class="search-box">
-                        <form method="GET" action="{{ route('bibliotecario.dashboard') }}">
-                            <div class="input-group">
-                                <span class="input-group-text">
-                                    <i class="bi bi-search"></i>
-                                </span>
-                                <input type="text" name="buscar" class="form-control"
-                                       placeholder="Buscar por email del usuario..."
-                                       value="{{ request('buscar') }}">
-                                <button class="btn btn-primary" type="submit">
-                                    <i class="bi bi-search me-1"></i>Buscar
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-
-                    <!-- Tabla moderna -->
-                    <div class="table-responsive">
-                        <table class="table table-modern table-hover align-middle mb-0">
-                            <thead>
-                                <tr>
-                                    <th><i class="bi bi-person me-1"></i>Usuario</th>
-                                    <th><i class="bi bi-book me-1"></i>Libro</th>
-                                    <th><i class="bi bi-calendar-event me-1"></i>F. Solicitud</th>
-                                    <th><i class="bi bi-calendar-check me-1"></i>F. Devolución</th>
-                                    <th><i class="bi bi-flag me-1"></i>Estado</th>
-                                    <th><i class="bi bi-gear me-1"></i>Acciones</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @forelse($prestamos->where('estado', 'pendiente') as $prestamo)
-                                    <tr>
-                                        <td>
-                                            <div class="d-flex align-items-center">
-                                                <div class="avatar-circle me-2">
-                                                    {{ strtoupper(substr($prestamo->usuario->email ?? 'U', 0, 1)) }}
-                                                </div>
-                                                <div>
-                                                    <strong>{{ $prestamo->usuario->email ?? 'N/A' }}</strong>
-                                                    @if($prestamo->usuario)
-                                                        <br><small class="text-muted">{{ $prestamo->usuario->nombre }} {{ $prestamo->usuario->apellido }}</small>
-                                                    @endif
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <strong class="text-primary">{{ $prestamo->libro->titulo ?? 'N/A' }}</strong>
-                                            @if($prestamo->libro)
-                                                <br><small class="text-muted">Código: {{ $prestamo->libro->codigo }}</small>
-                                            @endif
-                                        </td>
-                                        <td>
-                                            <span class="badge bg-light text-dark">
-                                                {{ \Carbon\Carbon::parse($prestamo->fecha_prestamo)->format('d/m/Y') }}
-                                            </span>
-                                        </td>
-                                        <td>
-                                            <span class="badge bg-primary">
-                                                {{ \Carbon\Carbon::parse($prestamo->fecha_devolucion)->format('d/m/Y') }}
-                                            </span>
-                                        </td>
-                                        <td>
-                                            <span class="status-badge warning">
-                                                <i class="bi bi-clock me-1"></i>{{ ucfirst($prestamo->estado) }}
-                                            </span>
-                                        </td>
-                                        <td>
-                                            <div class="btn-group" role="group">
-                                                <form action="{{ route('bibliotecario.confirmarPrestamo', $prestamo->id_prestamo) }}" method="POST" class="d-inline">
-                                                    @csrf
-                                                    <input type="hidden" name="tab" value="prestamos">
-                                                    <button class="btn action-btn btn-success" title="Aprobar préstamo">
-                                                        <i class="bi bi-check"></i>
-                                                    </button>
-                                                </form>
-                                                <form action="{{ route('bibliotecario.denegarPrestamo', $prestamo->id_prestamo) }}" method="POST" class="d-inline">
-                                                    @csrf
-                                                    <input type="hidden" name="tab" value="prestamos">
-                                                    <button type="button" class="btn action-btn btn-danger" title="Denegar préstamo"
-                                                            data-bs-toggle="modal" data-bs-target="#modalDenegarPrestamo"
-                                                            data-prestamo-id="{{ $prestamo->id_prestamo }}"
-                                                            data-libro-titulo="{{ $prestamo->libro->titulo ?? 'N/A' }}"
-                                                            data-usuario-email="{{ $prestamo->usuario->email ?? 'N/A' }}">
-                                                        <i class="bi bi-x"></i>
-                                                    </button>
-                                                </form>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                @empty
-                                    <tr>
-                                        <td colspan="6">
-                                            <div class="empty-state">
-                                                <i class="bi bi-inbox"></i>
-                                                <h5>No hay préstamos pendientes</h5>
-                                                <p class="text-muted">Todas las solicitudes han sido procesadas</p>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                @endforelse
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <!-- Devoluciones -->
-                <div id="panel-devoluciones" style="display:none;">
-                    <!-- Título de la sección -->
-                    <div class="section-title">
-                        <i class="bi bi-arrow-repeat"></i>
-                        <div>
-                            <span>Registro de Devoluciones</span>
-                            <p class="mb-0 fs-6 fw-normal opacity-75">Gestiona las devoluciones de libros en curso</p>
-                        </div>
-                    </div>
-
-                    <!-- Estadísticas rápidas -->
-                    <div class="row mb-3">
-                        <div class="col-md-4">
+                        <div class="col-md-3">
                             <div class="stats-card">
                                 <div class="stats-icon" style="background: #28a745;">
                                     <i class="bi bi-check-circle"></i>
                                 </div>
-                                <h4 class="fw-bold text-success mb-1">
-                                    {{ $prestamosEnCurso->filter(function($p) { return \Carbon\Carbon::now()->lte(\Carbon\Carbon::parse($p->fecha_devolucion)); })->count() }}
-                                </h4>
-                                <p class="text-muted mb-0 small">En Plazo</p>
+                                <h4 class="fw-bold text-success mb-1">{{ count($prestamos->where('estado', 'activo')) }}</h4>
+                                <p class="text-muted mb-0 small">Préstamos Activos</p>
                             </div>
                         </div>
-                        <div class="col-md-4">
+                        <div class="col-md-3">
+                            <div class="stats-card">
+                                <div class="stats-icon" style="background: #dc3545;">
+                                    <i class="bi bi-x-circle"></i>
+                                </div>
+                                <h4 class="fw-bold text-danger mb-1">{{ count($prestamos->where('estado', 'denegado')) }}</h4>
+                                <p class="text-muted mb-0 small">Préstamos Denegados</p>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="stats-card">
+                                <div class="stats-icon" style="background: #6f42c1;">
+                                    <i class="bi bi-archive"></i>
+                                </div>
+                                <h4 class="fw-bold text-info mb-1">{{ count($prestamos->where('estado', 'entregado')) }}</h4>
+                                <p class="text-muted mb-0 small">Préstamos Completados</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Búsqueda por usuario -->
+                    <div class="search-box mb-4">
+                        <div class="input-group">
+                            <span class="input-group-text">
+                                <i class="bi bi-search"></i>
+                            </span>
+                            <input type="text" id="buscarUsuarioPrestamos" class="form-control"
+                                   placeholder="Buscar por nombre o email del usuario..."
+                                   onkeyup="filtrarUsuariosPrestamos()">
+                        </div>
+                    </div>
+
+                    <!-- Acordeón de usuarios con préstamos pendientes -->
+                    <div class="accordion" id="acordeonPrestamos">
+                        @php
+                            $usuariosConPrestamos = $prestamos->where('estado', 'pendiente')->groupBy('id_usuario');
+                        @endphp
+
+                        @forelse($usuariosConPrestamos as $idUsuario => $prestamosPorUsuario)
+                            @php
+                                $usuario = $prestamosPorUsuario->first()->usuario;
+                                $nombreCompleto = ($usuario->nombre ?? '') . ' ' . ($usuario->apellido ?? '');
+                                $email = $usuario->email ?? 'N/A';
+                                $accordionId = 'prestamos-usuario-' . $idUsuario;
+                            @endphp
+
+                            <div class="accordion-item mb-3 usuario-prestamo-item"
+                                 data-usuario-nombre="{{ strtolower($nombreCompleto) }}"
+                                 data-usuario-email="{{ strtolower($email) }}">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button collapsed" type="button"
+                                            data-bs-toggle="collapse" data-bs-target="#{{ $accordionId }}"
+                                            aria-expanded="false" aria-controls="{{ $accordionId }}">
+                                        <div class="d-flex align-items-center w-100">
+                                            <div class="avatar-circle me-3">
+                                                {{ strtoupper(substr($email, 0, 1)) }}
+                                            </div>
+                                            <div class="flex-grow-1">
+                                                <strong>{{ $nombreCompleto }}</strong>
+                                                <br><small class="text-muted">{{ $email }}</small>
+                                            </div>
+                                            <span class="badge bg-warning text-dark me-2">
+                                                {{ count($prestamosPorUsuario) }} solicitud(es) pendiente(s)
+                                            </span>
+                                        </div>
+                                    </button>
+                                </h2>
+                                <div id="{{ $accordionId }}" class="accordion-collapse collapse"
+                                     data-bs-parent="#acordeonPrestamos">
+                                    <div class="accordion-body">
+                                        <!-- Botones de acción masiva por usuario -->
+                                        <div class="d-flex justify-content-end mb-3">
+                                            <div class="btn-group" role="group">
+                                                <button type="button" class="btn btn-success btn-sm"
+                                                        onclick="confirmarTodosPrestamosPorUsuario({{ $idUsuario }})"
+                                                        title="Aprobar todos los préstamos de este usuario">
+                                                    <i class="bi bi-check-all"></i> Aprobar Todo
+                                                </button>
+                                                <button type="button" class="btn btn-danger btn-sm"
+                                                        onclick="denegarTodosPrestamosPorUsuario({{ $idUsuario }})"
+                                                        title="Denegar todos los préstamos de este usuario">
+                                                    <i class="bi bi-x-lg"></i> Denegar Todo
+                                                </button>
+                                            </div>
+                                        </div>
+
+                                        <div class="table-responsive">
+                                            <table class="table table-sm table-hover mb-0">
+                                                <thead class="table-light">
+                                                    <tr>
+                                                        <th>Libro</th>
+                                                        <th>F. Solicitud</th>
+                                                        <th>F. Devolución</th>
+                                                        <th>Acciones</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @foreach($prestamosPorUsuario as $prestamo)
+                                                        <tr>
+                                                            <td>
+                                                                <strong class="text-primary">{{ $prestamo->libro->titulo ?? 'N/A' }}</strong>
+                                                                @if($prestamo->libro)
+                                                                    <br><small class="text-muted">Código: {{ $prestamo->libro->codigo }}</small>
+                                                                @endif
+                                                            </td>
+                                                            <td>
+                                                                <span class="badge bg-light text-dark">
+                                                                    {{ \Carbon\Carbon::parse($prestamo->fecha_prestamo)->format('d/m/Y') }}
+                                                                </span>
+                                                            </td>
+                                                            <td>
+                                                                <span class="badge bg-primary">
+                                                                    {{ \Carbon\Carbon::parse($prestamo->fecha_devolucion)->format('d/m/Y') }}
+                                                                </span>
+                                                            </td>
+                                                            <td>
+                                                                <div class="btn-group" role="group">
+                                                                    <button type="button" class="btn action-btn btn-success btn-sm btn-confirmar-ajax"
+                                                                            data-prestamo-id="{{ $prestamo->id_prestamo }}"
+                                                                            data-usuario-id="{{ $idUsuario }}"
+                                                                            title="Aprobar préstamo">
+                                                                        <i class="bi bi-check"></i>
+                                                                    </button>
+                                                                    <button type="button" class="btn action-btn btn-danger btn-sm btn-denegar-ajax"
+                                                                            data-prestamo-id="{{ $prestamo->id_prestamo }}"
+                                                                            data-usuario-id="{{ $idUsuario }}"
+                                                                            data-libro-titulo="{{ $prestamo->libro->titulo ?? 'N/A' }}"
+                                                                            data-usuario-email="{{ $usuario->email ?? 'N/A' }}"
+                                                                            title="Denegar préstamo">
+                                                                        <i class="bi bi-x"></i>
+                                                                    </button>
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                    @endforeach
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        @empty
+                            <div class="empty-state">
+                                <i class="bi bi-inbox"></i>
+                                <h5>No hay préstamos pendientes</h5>
+                                <p class="text-muted">Todas las solicitudes han sido procesadas</p>
+                            </div>
+                        @endforelse
+                    </div>
+                </div>
+
+                <!-- Sección de Devoluciones -->
+                <div id="panel-devoluciones" style="display:none;">
+                    <div class="section-title">
+                        <i class="bi bi-arrow-repeat"></i>
+                        <h2>Gestión de Devoluciones</h2>
+                    </div>
+
+                    <!-- Estadísticas de Devoluciones -->
+                    <div class="row mb-4">
+                        <div class="col-md-3">
+                            <div class="stats-card">
+                                <div class="stats-icon devoluciones">
+                                    <i class="bi bi-book-half"></i>
+                                </div>
+                                @php
+                                    $prestamosActivos = $prestamos->where('estado', 'activo');
+                                @endphp
+                                <h4 class="fw-bold text-info mb-1">{{ count($prestamosActivos) }}</h4>
+                                <p class="text-muted mb-0 small">Libros Prestados</p>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
                             <div class="stats-card">
                                 <div class="stats-icon" style="background: #dc3545;">
                                     <i class="bi bi-exclamation-triangle"></i>
                                 </div>
-                                <h4 class="fw-bold text-danger mb-1">
-                                    {{ $prestamosEnCurso->filter(function($p) { return \Carbon\Carbon::now()->gt(\Carbon\Carbon::parse($p->fecha_devolucion)); })->count() }}
-                                </h4>
+                                @php
+                                    $prestamosAtrasados = $prestamosActivos->filter(function($p) {
+                                        return \Carbon\Carbon::now()->gt(\Carbon\Carbon::parse($p->fecha_devolucion));
+                                    });
+                                @endphp
+                                <h4 class="fw-bold text-danger mb-1">{{ count($prestamosAtrasados) }}</h4>
                                 <p class="text-muted mb-0 small">Fuera de Plazo</p>
                             </div>
                         </div>
-                        <div class="col-md-4">
+                        <div class="col-md-3">
                             <div class="stats-card">
-                                <div class="stats-icon devoluciones">
-                                    <i class="bi bi-collection"></i>
+                                <div class="stats-icon" style="background: #28a745;">
+                                    <i class="bi bi-check-circle"></i>
                                 </div>
-                                <h4 class="fw-bold text-info mb-1">{{ count($prestamosEnCurso) }}</h4>
-                                <p class="text-muted mb-0 small">Total Activos</p>
+                                @php
+                                    $prestamosEnPlazo = $prestamosActivos->filter(function($p) {
+                                        return \Carbon\Carbon::now()->lte(\Carbon\Carbon::parse($p->fecha_devolucion));
+                                    });
+                                @endphp
+                                <h4 class="fw-bold text-success mb-1">{{ count($prestamosEnPlazo) }}</h4>
+                                <p class="text-muted mb-0 small">En Plazo</p>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="stats-card">
+                                <div class="stats-icon" style="background: #6f42c1;">
+                                    <i class="bi bi-archive-fill"></i>
+                                </div>
+                                <h4 class="fw-bold text-secondary mb-1">{{ count($prestamos->where('estado', 'entregado')) }}</h4>
+                                <p class="text-muted mb-0 small">Entregados Hoy</p>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Búsqueda mejorada -->
-                    <div class="search-box">
-                        <form method="GET" action="{{ route('bibliotecario.dashboard') }}">
-                            <div class="input-group">
-                                <span class="input-group-text">
-                                    <i class="bi bi-search"></i>
-                                </span>
-                                <input type="text" name="buscar_devolucion" class="form-control"
-                                       placeholder="Buscar por email del usuario..."
-                                       value="{{ request('buscar_devolucion') }}">
-                                <button class="btn btn-primary" type="submit">
-                                    <i class="bi bi-search me-1"></i>Buscar
-                                </button>
-                            </div>
-                        </form>
+                    <!-- Búsqueda por usuario -->
+                    <div class="search-box mb-4">
+                        <div class="input-group">
+                            <span class="input-group-text">
+                                <i class="bi bi-search"></i>
+                            </span>
+                            <input type="text" id="buscarUsuarioDevoluciones" class="form-control"
+                                   placeholder="Buscar por nombre o email del usuario..."
+                                   onkeyup="filtrarUsuariosDevoluciones()">
+                        </div>
                     </div>
 
-                    <!-- Tabla moderna -->
-                    <div class="table-responsive">
-                        <table class="table table-modern table-hover align-middle mb-0">
-                            <thead>
-                                <tr>
-                                    <th><i class="bi bi-person me-1"></i>Usuario</th>
-                                    <th><i class="bi bi-book me-1"></i>Libro</th>
-                                    <th><i class="bi bi-calendar-check me-1"></i>F. Aprobación</th>
-                                    <th><i class="bi bi-calendar-x me-1"></i>F. Límite</th>
-                                    <th><i class="bi bi-clock me-1"></i>Estado Plazo</th>
-                                    <th><i class="bi bi-gear me-1"></i>Acción</th>
-                                </tr>
-                            </thead>
-                                <tbody>
-                                    @forelse($prestamosEnCurso as $prestamo)
-                                    @php
-                                        $fechaDevolucion = \Carbon\Carbon::parse($prestamo->fecha_devolucion);
-                                        $ahora = \Carbon\Carbon::now();
-                                        $enPlazo = $ahora->lte($fechaDevolucion);
+                    <!-- Acordeón de usuarios con devoluciones pendientes -->
+                    <div class="accordion" id="acordeonDevoluciones">
+                        @php
+                            $usuariosConDevoluciones = $prestamos->where('estado', 'activo')->groupBy('id_usuario');
+                        @endphp
 
-                                        if ($enPlazo) {
-                                            // Tiempo restante
-                                            $diffInHours = $ahora->diffInHours($fechaDevolucion, false);
-                                            $dias = intval(floor($diffInHours / 24));
-                                            $horas = intval($diffInHours % 24);
+                        @forelse($usuariosConDevoluciones as $idUsuario => $devolucionesPorUsuario)
+                            @php
+                                $usuario = $devolucionesPorUsuario->first()->usuario;
+                                $nombreCompleto = ($usuario->nombre ?? '') . ' ' . ($usuario->apellido ?? '');
+                                $email = $usuario->email ?? 'N/A';
+                                $accordionId = 'devoluciones-usuario-' . $idUsuario;
 
-                                            if ($dias > 0) {
-                                                $diasTexto = $horas > 0 ? "{$dias}d {$horas}h" : "{$dias} día" . ($dias > 1 ? "s" : "");
-                                            } else {
-                                                $diasTexto = $horas > 0 ? "{$horas}h" : "menos de 1h";
-                                            }
-                                        } else {
-                                            // Tiempo de atraso
-                                            $diffInHours = $ahora->diffInHours($fechaDevolucion, false);
-                                            $dias = intval(floor(abs($diffInHours) / 24));
-                                            $horas = intval(abs($diffInHours) % 24);
+                                // Calcular préstamos atrasados para este usuario
+                                $now = \Carbon\Carbon::now();
+                                $prestamosAtrasados = $devolucionesPorUsuario->filter(function($p) use ($now) {
+                                    return $now->gt(\Carbon\Carbon::parse($p->fecha_devolucion));
+                                });
+                                $prestamosEnPlazo = $devolucionesPorUsuario->filter(function($p) use ($now) {
+                                    return $now->lte(\Carbon\Carbon::parse($p->fecha_devolucion));
+                                });
+                            @endphp
 
-                                            if ($dias > 0) {
-                                                $diasTexto = $horas > 0 ? "{$dias}d {$horas}h" : "{$dias} día" . ($dias > 1 ? "s" : "");
-                                            } else {
-                                                $diasTexto = $horas > 0 ? "{$horas}h" : "menos de 1h";
-                                            }
-                                        }
-                                    @endphp
-                                    <tr class="{{ !$enPlazo ? 'table-warning' : '' }}">
-                                        <td>
-                                            <div class="d-flex align-items-center">
-                                                <div class="avatar-circle me-2">
-                                                    {{ strtoupper(substr($prestamo->usuario->email ?? 'U', 0, 1)) }}
-                                                </div>
-                                                <div>
-                                                    <strong>{{ $prestamo->usuario->email ?? 'N/A' }}</strong>
-                                                    @if($prestamo->usuario)
-                                                        <br><small class="text-muted">{{ $prestamo->usuario->nombre }} {{ $prestamo->usuario->apellido }}</small>
-                                                    @endif
-                                                </div>
+                            <div class="accordion-item mb-3 usuario-devolucion-item"
+                                 data-usuario-nombre="{{ strtolower($nombreCompleto) }}"
+                                 data-usuario-email="{{ strtolower($email) }}">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button collapsed" type="button"
+                                            data-bs-toggle="collapse" data-bs-target="#{{ $accordionId }}"
+                                            aria-expanded="false" aria-controls="{{ $accordionId }}">
+                                        <div class="d-flex align-items-center w-100">
+                                            <div class="avatar-circle me-3">
+                                                {{ strtoupper(substr($email, 0, 1)) }}
                                             </div>
-                                        </td>
-                                        <td>
-                                            <strong class="text-primary">{{ $prestamo->libro->titulo ?? 'N/A' }}</strong>
-                                            @if($prestamo->libro)
-                                                <br><small class="text-muted">Código: {{ $prestamo->libro->codigo }}</small>
-                                            @endif
-                                        </td>
-                                        <td>
-                                            <span class="badge bg-light text-dark">
-                                                {{ $prestamo->updated_at ? $prestamo->updated_at->format('d/m/Y') : \Carbon\Carbon::parse($prestamo->fecha_prestamo)->format('d/m/Y') }}
-                                            </span>
-                                        </td>
-                                        <td>
-                                            <span class="badge {{ $enPlazo ? 'bg-success' : 'bg-danger' }}">
-                                                {{ \Carbon\Carbon::parse($prestamo->fecha_devolucion)->format('d/m/Y') }}
-                                            </span>
-                                        </td>
-                                        <td>
-                                            @if($enPlazo)
-                                                <span class="status-badge success">
-                                                    <i class="bi bi-check-circle me-1"></i>En plazo
-                                                    @if($diasTexto)
-                                                        <br><small>({{ $diasTexto }})</small>
-                                                    @endif
-                                                </span>
-                                            @else
-                                                <span class="status-badge danger">
-                                                    <i class="bi bi-exclamation-triangle me-1"></i>Fuera de plazo
-                                                    <br><small>({{ $diasTexto }} tarde)</small>
-                                                </span>
-                                            @endif
-                                        </td>
-                                        <td>
-                                            <form method="POST" action="{{ route('bibliotecario.registrarDevolucion') }}">
-                                                @csrf
-                                                <input type="hidden" name="id_prestamo" value="{{ $prestamo->id_prestamo }}">
-                                                <input type="hidden" name="tab" value="devoluciones">
-                                                <button type="submit" class="btn action-btn btn-success" title="Registrar devolución">
-                                                    <i class="bi bi-check-circle me-1"></i>Registrar
+                                            <div class="flex-grow-1">
+                                                <strong>{{ $nombreCompleto }}</strong>
+                                                <br><small class="text-muted">{{ $email }}</small>
+                                            </div>
+                                            <div class="d-flex gap-2 me-2">
+                                                @if(count($prestamosAtrasados) > 0)
+                                                    <span class="badge bg-danger">
+                                                        {{ count($prestamosAtrasados) }} atrasado(s)
+                                                    </span>
+                                                @endif
+                                                @if(count($prestamosEnPlazo) > 0)
+                                                    <span class="badge bg-success">
+                                                        {{ count($prestamosEnPlazo) }} en plazo
+                                                    </span>
+                                                @endif
+                                            </div>
+                                        </div>
+                                    </button>
+                                </h2>
+                                <div id="{{ $accordionId }}" class="accordion-collapse collapse"
+                                     data-bs-parent="#acordeonDevoluciones">
+                                    <div class="accordion-body">
+                                        <!-- Botones de acción masiva por usuario -->
+                                        <div class="d-flex justify-content-end mb-3">
+                                            <div class="btn-group" role="group">
+                                                <button type="button" class="btn btn-success btn-sm"
+                                                        onclick="registrarTodasDevolucionesPorUsuario({{ $idUsuario }})"
+                                                        title="Registrar todas las devoluciones de este usuario">
+                                                    <i class="bi bi-check-all"></i> Registrar Todo
                                                 </button>
-                                            </form>
-                                        </td>
-                                    </tr>
-                                    @empty
-                                    <tr>
-                                        <td colspan="6">
-                                            <div class="empty-state">
-                                                <i class="bi bi-inbox"></i>
-                                                <h5>No hay préstamos activos</h5>
-                                                <p class="text-muted">No hay libros pendientes de devolución</p>
+                                                @if(count($prestamosAtrasados) > 0)
+                                                <button type="button" class="btn btn-warning btn-sm"
+                                                        onclick="aplicarSancionMasiva({{ $idUsuario }})"
+                                                        title="Aplicar sanción por todos los retrasos">
+                                                    <i class="bi bi-exclamation-triangle"></i> Sancionar
+                                                </button>
+                                                @endif
                                             </div>
-                                        </td>
-                                    </tr>
-                                    @endforelse
-                                </tbody>
-                        </table>
+                                        </div>
+
+                                        <div class="table-responsive">
+                                            <table class="table table-sm table-hover mb-0">
+                                                <thead class="table-light">
+                                                    <tr>
+                                                        <th>Libro</th>
+                                                        <th>F. Préstamo</th>
+                                                        <th>F. Límite</th>
+                                                        <th>Estado</th>
+                                                        <th>Acciones</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @foreach($devolucionesPorUsuario as $prestamo)
+                                                        @php
+                                                            $fechaDevolucion = \Carbon\Carbon::parse($prestamo->fecha_devolucion);
+                                                            $ahora = \Carbon\Carbon::now();
+                                                            $enPlazo = $ahora->lte($fechaDevolucion);
+                                                            // Calcular días enteros
+                                                            if ($enPlazo) {
+                                                                $diasRestantes = $ahora->startOfDay()->diffInDays($fechaDevolucion->startOfDay());
+                                                            } else {
+                                                                $diasRestantes = $fechaDevolucion->startOfDay()->diffInDays($ahora->startOfDay());
+                                                            }
+                                                        @endphp
+                                                        <tr>
+                                                            <td>
+                                                                <strong class="text-primary">{{ $prestamo->libro->titulo ?? 'N/A' }}</strong>
+                                                                @if($prestamo->libro)
+                                                                    <br><small class="text-muted">Código: {{ $prestamo->libro->codigo }}</small>
+                                                                @endif
+                                                            </td>
+                                                            <td>
+                                                                <span class="badge bg-light text-dark">
+                                                                    {{ \Carbon\Carbon::parse($prestamo->fecha_prestamo)->format('d/m/Y') }}
+                                                                </span>
+                                                            </td>
+                                                            <td>
+                                                                <span class="badge {{ $enPlazo ? 'bg-success' : 'bg-danger' }}">
+                                                                    {{ $fechaDevolucion->format('d/m/Y') }}
+                                                                </span>
+                                                            </td>
+                                                            <td>
+                                                                @if($enPlazo)
+                                                                    @if($diasRestantes == 0)
+                                                                        <span class="status-badge warning">
+                                                                            <i class="bi bi-exclamation-circle me-1"></i>Vence hoy
+                                                                        </span>
+                                                                    @elseif($diasRestantes == 1)
+                                                                        <span class="status-badge warning">
+                                                                            <i class="bi bi-calendar-event me-1"></i>1d restante
+                                                                        </span>
+                                                                    @else
+                                                                        <span class="status-badge success">
+                                                                            <i class="bi bi-check-circle me-1"></i>{{ $diasRestantes }}d restantes
+                                                                        </span>
+                                                                    @endif
+                                                                @else
+                                                                    <span class="status-badge danger">
+                                                                        <i class="bi bi-exclamation-triangle me-1"></i>{{ $diasRestantes }}d tarde
+                                                                    </span>
+                                                                @endif
+                                                            </td>
+                                                            <td>
+                                                                <div class="btn-group" role="group">
+                                                                    <button type="button" class="btn action-btn btn-success btn-sm btn-devolucion-ajax"
+                                                                            data-prestamo-id="{{ $prestamo->id_prestamo }}"
+                                                                            data-usuario-id="{{ $idUsuario }}"
+                                                                            title="Registrar devolución">
+                                                                        <i class="bi bi-check-circle"></i>
+                                                                    </button>
+                                                                    @if(!$enPlazo)
+                                                                        <button type="button" class="btn action-btn btn-warning btn-sm btn-sancion-retraso"
+                                                                                title="Aplicar sanción por retraso"
+                                                                                data-usuario-id="{{ $prestamo->usuario->id_usuario ?? 0 }}"
+                                                                                data-usuario-nombre="{{ $prestamo->usuario->nombre ?? '' }} {{ $prestamo->usuario->apellido ?? '' }}"
+                                                                                data-usuario-email="{{ $prestamo->usuario->email ?? '' }}"
+                                                                                data-dias-retraso="{{ $diasRestantes }}">
+                                                                            <i class="bi bi-exclamation-triangle"></i>
+                                                                        </button>
+                                                                    @endif
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                    @endforeach
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        @empty
+                            <div class="empty-state">
+                                <i class="bi bi-inbox"></i>
+                                <h5>No hay devoluciones pendientes</h5>
+                                <p class="text-muted">Todos los libros han sido devueltos</p>
+                            </div>
+                        @endforelse
                     </div>
                 </div>
 
@@ -1613,14 +1855,17 @@
                                             </td>
                                             <td>
                                                 <div class="btn-group" role="group">
-                                                    <button class="btn btn-sm btn-warning"
-                                                            onclick="abrirModalSancion({{ $usuario->id_usuario }}, '{{ $usuario->nombre }} {{ $usuario->apellido }}', '{{ $usuario->email }}')"
+                                                    <button class="btn btn-sm btn-warning btn-sancion"
+                                                            data-usuario-id="{{ $usuario->id_usuario }}"
+                                                            data-usuario-nombre="{{ $usuario->nombre }} {{ $usuario->apellido }}"
+                                                            data-usuario-email="{{ $usuario->email }}"
                                                             @if($sancionActiva) title="Usuario ya tiene sanción activa" disabled @endif
                                                             title="Aplicar sanción">
                                                         <i class="bi bi-exclamation-triangle"></i>
                                                     </button>
-                                                    <button class="btn btn-sm btn-info"
-                                                            onclick="verHistorialUsuario({{ $usuario->id_usuario }}, '{{ $usuario->nombre }} {{ $usuario->apellido }}')"
+                                                    <button class="btn btn-sm btn-info btn-historial"
+                                                            data-usuario-id="{{ $usuario->id_usuario }}"
+                                                            data-usuario-nombre="{{ $usuario->nombre }} {{ $usuario->apellido }}"
                                                             title="Ver historial completo">
                                                         <i class="bi bi-clock-history"></i>
                                                     </button>
@@ -1662,7 +1907,9 @@
                                     <tbody>
                                         @foreach($sancionesActivas as $sancion)
                                         @php
-                                            $diasRestantes = \Carbon\Carbon::now()->diffInDays(\Carbon\Carbon::parse($sancion->fecha_fin), false);
+                                            $fechaFin = \Carbon\Carbon::parse($sancion->fecha_fin);
+                                            $ahora = \Carbon\Carbon::now();
+                                            $diasRestantes = $ahora->startOfDay()->diffInDays($fechaFin->startOfDay(), false);
                                         @endphp
                                         <tr>
                                             <td>
@@ -1676,7 +1923,7 @@
                                             <td>{{ \Carbon\Carbon::parse($sancion->fecha_fin)->format('d/m/Y') }}</td>
                                             <td>
                                                 @if($diasRestantes > 0)
-                                                    <span class="badge bg-danger">{{ $diasRestantes }} días</span>
+                                                    <span class="badge bg-danger">{{ $diasRestantes }}d restantes</span>
                                                 @else
                                                     <span class="badge bg-secondary">Vencida</span>
                                                 @endif
@@ -2095,11 +2342,14 @@
     <script>
         // Función para mostrar tabs
         function showTab(tab) {
+            // Ocultar todos los paneles
             document.getElementById('panel-prestamos').style.display = tab === 'prestamos' ? '' : 'none';
             document.getElementById('panel-devoluciones').style.display = tab === 'devoluciones' ? '' : 'none';
             document.getElementById('panel-sanciones').style.display = tab === 'sanciones' ? '' : 'none';
             document.getElementById('panel-libros').style.display = tab === 'libros' ? '' : 'none';
             document.getElementById('panel-historial').style.display = tab === 'historial' ? '' : 'none';
+
+            // Actualizar clases activas en el menú
             document.getElementById('tab-prestamos').classList.toggle('active', tab === 'prestamos');
             document.getElementById('tab-devoluciones').classList.toggle('active', tab === 'devoluciones');
             document.getElementById('tab-sanciones').classList.toggle('active', tab === 'sanciones');
@@ -2121,6 +2371,93 @@
             }
         }
 
+        // Funciones para la nueva sección de solicitudes
+        function buscarUsuariosEnTiempoReal() {
+            const buscar = document.getElementById('buscarUsuarioSolicitudes').value;
+
+            if (buscar.length >= 2 || buscar.length === 0) {
+                const url = new URL(window.location);
+                url.searchParams.set('buscar', buscar);
+                window.location.href = url.toString();
+            }
+        }
+
+        // Función para filtrar por tipo de solicitud (solo frontend)
+        function filtrarPorTipo() {
+            const filtro = document.getElementById('filtroTipoSolicitud').value;
+            const usuarios = document.querySelectorAll('#accordionSolicitudes .accordion-item');
+
+            usuarios.forEach(usuario => {
+                const tipoSolicitudes = usuario.getAttribute('data-tipo-solicitudes') || '';
+                const esAtrasado = usuario.getAttribute('data-atrasado') === 'true';
+
+                let mostrar = false;
+
+                switch(filtro) {
+                    case 'todos':
+                        mostrar = true;
+                        break;
+                    case 'prestamos':
+                        mostrar = tipoSolicitudes.includes('prestamos');
+                        break;
+                    case 'devoluciones':
+                        mostrar = tipoSolicitudes.includes('devoluciones');
+                        break;
+                    case 'atrasados':
+                        mostrar = esAtrasado;
+                        break;
+                }
+
+                usuario.style.display = mostrar ? 'block' : 'none';
+            });
+        }
+
+        // Búsqueda en tiempo real por texto
+        document.addEventListener('DOMContentLoaded', function() {
+            const inputBuscar = document.getElementById('buscarUsuarioSolicitudes');
+            if (inputBuscar) {
+                inputBuscar.addEventListener('input', function() {
+                    const texto = this.value.toLowerCase();
+                    const usuarios = document.querySelectorAll('#accordionSolicitudes .accordion-item');
+
+                    usuarios.forEach(usuario => {
+                        const datosUsuario = usuario.getAttribute('data-usuario-datos') || '';
+                        const coincide = datosUsuario.includes(texto);
+
+                        // Solo aplicar filtro de texto si no hay filtro de tipo activo
+                        const filtroTipo = document.getElementById('filtroTipoSolicitud').value;
+                        if (filtroTipo === 'todos') {
+                            usuario.style.display = coincide ? 'block' : 'none';
+                        } else {
+                            // Combinar ambos filtros
+                            const tipoSolicitudes = usuario.getAttribute('data-tipo-solicitudes') || '';
+                            const esAtrasado = usuario.getAttribute('data-atrasado') === 'true';
+
+                            let mostrarPorTipo = false;
+                            switch(filtroTipo) {
+                                case 'prestamos':
+                                    mostrarPorTipo = tipoSolicitudes.includes('prestamos');
+                                    break;
+                                case 'devoluciones':
+                                    mostrarPorTipo = tipoSolicitudes.includes('devoluciones');
+                                    break;
+                                case 'atrasados':
+                                    mostrarPorTipo = esAtrasado;
+                                    break;
+                            }
+
+                            usuario.style.display = (coincide && mostrarPorTipo) ? 'block' : 'none';
+                        }
+                    });
+                });
+            }
+
+            // Detectar parámetro tab en URL al cargar
+            const urlParams = new URLSearchParams(window.location.search);
+            const tab = urlParams.get('tab') || 'prestamos';
+            showTab(tab);
+        });
+
         // Función para abrir modal de sanción
         function abrirModalSancion(idUsuario, nombreCompleto, email) {
             document.getElementById('usuario_id_sancion').value = idUsuario;
@@ -2131,6 +2468,22 @@
             document.getElementById('tipo_sancion').value = '';
             document.getElementById('dias_bloqueo').value = '';
             document.getElementById('observaciones_sancion').value = '';
+
+            // Mostrar el modal
+            const modal = new bootstrap.Modal(document.getElementById('modalSancion'));
+            modal.show();
+        }
+
+        // Función para abrir modal de sanción por retraso
+        function abrirModalSancionPorRetraso(idUsuario, nombreCompleto, email, diasRetraso) {
+            document.getElementById('usuario_id_sancion').value = idUsuario;
+            document.getElementById('info_usuario_sancion').innerHTML =
+                `<strong>${nombreCompleto}</strong><br><small class="text-muted">${email}</small>`;
+
+            // Pre-llenar formulario con datos de retraso
+            document.getElementById('tipo_sancion').value = 'retraso';
+            document.getElementById('dias_bloqueo').value = Math.min(7 + diasRetraso, 30); // 7 días base + días de retraso, máximo 30
+            document.getElementById('observaciones_sancion').value = `Sanción por retraso de ${diasRetraso} días en la devolución de libro`;
 
             // Mostrar el modal
             const modal = new bootstrap.Modal(document.getElementById('modalSancion'));
@@ -2268,22 +2621,36 @@
 
                         prestamos.forEach(prestamo => {
                             const fechaDevolucion = new Date(prestamo.fecha_devolucion);
-                            const fechaReal = prestamo.fecha_entrega_real ? new Date(prestamo.fecha_entrega_real) : new Date();
-                            const diasAtraso = prestamo.estado === 'activo' && fechaReal > fechaDevolucion ?
-                                Math.ceil((fechaReal - fechaDevolucion) / (1000 * 60 * 60 * 24)) : 0;
+                            const fechaReal = prestamo.fecha_entrega_real ? new Date(prestamo.fecha_entrega_real) : null;
+
+                            let diasAtraso = 0;
+
+                            // Calcular días de atraso según el estado
+                            if (prestamo.estado === 'activo') {
+                                // Préstamo activo: comparar fecha actual con fecha límite
+                                const ahora = new Date();
+                                if (ahora > fechaDevolucion) {
+                                    diasAtraso = Math.ceil((ahora - fechaDevolucion) / (1000 * 60 * 60 * 24));
+                                }
+                            } else if (prestamo.estado === 'devuelto' && fechaReal) {
+                                // Préstamo devuelto: comparar fecha real de entrega con fecha límite
+                                if (fechaReal > fechaDevolucion) {
+                                    diasAtraso = Math.ceil((fechaReal - fechaDevolucion) / (1000 * 60 * 60 * 24));
+                                }
+                            }
 
                             html += `
                                 <tr>
                                     <td><strong>${prestamo.libro?.titulo || 'N/A'}</strong></td>
                                     <td>${formatDate(prestamo.fecha_prestamo)}</td>
                                     <td>${formatDate(prestamo.fecha_devolucion)}</td>
-                                    <td>${prestamo.fecha_entrega_real ? formatDate(prestamo.fecha_entrega_real) : '-'}</td>
+                                    <td>${fechaReal ? formatDate(prestamo.fecha_entrega_real) : '-'}</td>
                                     <td>
                                         ${getEstadoBadge(prestamo.estado)}
                                     </td>
                                     <td>
                                         ${diasAtraso > 0 ?
-                                            `<span class="badge bg-danger">${diasAtraso} días</span>` :
+                                            `<span class="badge bg-danger">${diasAtraso}d atraso</span>` :
                                             '<span class="text-muted">-</span>'
                                         }
                                     </td>
@@ -2385,10 +2752,45 @@
                 'pendiente': '<span class="badge bg-warning text-dark">Pendiente</span>',
                 'activo': '<span class="badge bg-info">Activo</span>',
                 'entregado': '<span class="badge bg-success">Entregado</span>',
+                'devuelto': '<span class="badge bg-success">Devuelto</span>',
                 'denegado': '<span class="badge bg-danger">Denegado</span>',
                 'retraso': '<span class="badge bg-danger">En retraso</span>'
             };
             return badges[estado] || '<span class="badge bg-secondary">Desconocido</span>';
+        }
+
+        // Función de búsqueda de usuarios en préstamos
+        function filtrarUsuariosPrestamos() {
+            const busqueda = document.getElementById('buscarUsuarioPrestamos').value.toLowerCase();
+            const items = document.querySelectorAll('.usuario-prestamo-item');
+
+            items.forEach(item => {
+                const nombre = item.dataset.usuarioNombre || '';
+                const email = item.dataset.usuarioEmail || '';
+
+                if (nombre.includes(busqueda) || email.includes(busqueda)) {
+                    item.style.display = '';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        }
+
+        // Función de búsqueda de usuarios en devoluciones
+        function filtrarUsuariosDevoluciones() {
+            const busqueda = document.getElementById('buscarUsuarioDevoluciones').value.toLowerCase();
+            const items = document.querySelectorAll('.usuario-devolucion-item');
+
+            items.forEach(item => {
+                const nombre = item.dataset.usuarioNombre || '';
+                const email = item.dataset.usuarioEmail || '';
+
+                if (nombre.includes(busqueda) || email.includes(busqueda)) {
+                    item.style.display = '';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
         }
 
         // Función de búsqueda de usuarios
@@ -2446,6 +2848,416 @@
             }
         });
 
+        // ============ FUNCIONES AJAX ============
+
+        // Función para confirmar préstamo individual vía AJAX
+        function confirmarPrestamoAjax(prestamoId, usuarioId) {
+            const button = document.querySelector(`[data-prestamo-id="${prestamoId}"].btn-confirmar-ajax`);
+            const originalContent = button.innerHTML;
+
+            button.disabled = true;
+            button.innerHTML = '<i class="bi bi-hourglass-split"></i>';
+
+            fetch(`/bibliotecario/ajax/prestamo/${prestamoId}/confirmar`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                },
+                body: JSON.stringify({ tab: 'prestamos' })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Remover la fila del préstamo confirmado
+                    const row = button.closest('tr');
+                    row.style.transition = 'opacity 0.3s ease';
+                    row.style.opacity = '0';
+
+                    setTimeout(() => {
+                        row.remove();
+
+                        // Actualizar badge del acordeón y verificar si está vacío
+                        actualizarBadgeAcordeon(usuarioId, 'prestamos');
+
+                        // Actualizar estadísticas generales
+                        actualizarEstadisticasPrestamos();
+
+                        // Mostrar mensaje de éxito
+                        mostrarNotificacion('Préstamo confirmado correctamente', 'success');
+                    }, 300);
+                } else {
+                    button.disabled = false;
+                    button.innerHTML = originalContent;
+                    mostrarNotificacion(data.message || 'Error al confirmar préstamo', 'error');
+                }
+            })
+            .catch(error => {
+                button.disabled = false;
+                button.innerHTML = originalContent;
+                mostrarNotificacion('Error de conexión', 'error');
+                console.error('Error:', error);
+            });
+        }
+
+        // Función para denegar préstamo individual vía AJAX
+        function denegarPrestamoAjax(prestamoId, usuarioId, observaciones) {
+            return fetch(`/bibliotecario/ajax/prestamo/${prestamoId}/denegar`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                },
+                body: JSON.stringify({
+                    observaciones: observaciones,
+                    tab: 'prestamos'
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Remover la fila del préstamo denegado
+                    const button = document.querySelector(`[data-prestamo-id="${prestamoId}"].btn-denegar-ajax`);
+                    const row = button.closest('tr');
+                    row.style.transition = 'opacity 0.3s ease';
+                    row.style.opacity = '0';
+
+                    setTimeout(() => {
+                        row.remove();
+
+                        // Actualizar badge del acordeón y verificar si está vacío
+                        actualizarBadgeAcordeon(usuarioId, 'prestamos');
+
+                        // Actualizar estadísticas generales
+                        actualizarEstadisticasPrestamos();
+
+                        // Mostrar mensaje de éxito
+                        mostrarNotificacion('Préstamo denegado correctamente', 'warning');
+                    }, 300);
+                } else {
+                    mostrarNotificacion(data.message || 'Error al denegar préstamo', 'error');
+                }
+                return data;
+            });
+        }
+
+        // Función para registrar devolución individual vía AJAX
+        function registrarDevolucionAjax(prestamoId, usuarioId) {
+            const button = document.querySelector(`[data-prestamo-id="${prestamoId}"].btn-devolucion-ajax`);
+            const originalContent = button.innerHTML;
+
+            button.disabled = true;
+            button.innerHTML = '<i class="bi bi-hourglass-split"></i>';
+
+            fetch('/bibliotecario/ajax/devolucion', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                },
+                body: JSON.stringify({
+                    id_prestamo: prestamoId,
+                    tab: 'devoluciones'
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Remover la fila de la devolución registrada
+                    const row = button.closest('tr');
+                    row.style.transition = 'opacity 0.3s ease';
+                    row.style.opacity = '0';
+
+                    setTimeout(() => {
+                        row.remove();
+
+                        // Actualizar badge del acordeón y verificar si está vacío
+                        actualizarBadgeAcordeon(usuarioId, 'devoluciones');
+
+                        // Actualizar estadísticas generales
+                        actualizarEstadisticasDevoluciones();
+
+                        // Mostrar mensaje de éxito
+                        mostrarNotificacion('Devolución registrada correctamente', 'success');
+                    }, 300);
+                } else {
+                    button.disabled = false;
+                    button.innerHTML = originalContent;
+                    mostrarNotificacion(data.message || 'Error al registrar devolución', 'error');
+                }
+            })
+            .catch(error => {
+                button.disabled = false;
+                button.innerHTML = originalContent;
+                mostrarNotificacion('Error de conexión', 'error');
+                console.error('Error:', error);
+            });
+        }
+
+        // Función para confirmar todos los préstamos de un usuario
+        function confirmarTodosPrestamosPorUsuario(usuarioId) {
+            if (!confirm('¿Confirmar TODOS los préstamos de este usuario?')) return;
+
+            const buttons = document.querySelectorAll(`[data-usuario-id="${usuarioId}"].btn-confirmar-ajax`);
+
+            buttons.forEach(button => {
+                const prestamoId = button.getAttribute('data-prestamo-id');
+                confirmarPrestamoAjax(prestamoId, usuarioId);
+            });
+        }
+
+        // Función para denegar todos los préstamos de un usuario
+        function denegarTodosPrestamosPorUsuario(usuarioId) {
+            const observaciones = prompt('Motivo para denegar todos los préstamos:');
+            if (!observaciones) return;
+
+            const buttons = document.querySelectorAll(`[data-usuario-id="${usuarioId}"].btn-denegar-ajax`);
+
+            let promises = [];
+            buttons.forEach(button => {
+                const prestamoId = button.getAttribute('data-prestamo-id');
+                promises.push(denegarPrestamoAjax(prestamoId, usuarioId, observaciones));
+            });
+
+            Promise.all(promises).then(() => {
+                mostrarNotificacion('Todos los préstamos han sido denegados', 'warning');
+            });
+        }
+
+        // Función para registrar todas las devoluciones de un usuario
+        function registrarTodasDevolucionesPorUsuario(usuarioId) {
+            if (!confirm('¿Registrar TODAS las devoluciones de este usuario?')) return;
+
+            const buttons = document.querySelectorAll(`[data-usuario-id="${usuarioId}"].btn-devolucion-ajax`);
+
+            buttons.forEach(button => {
+                const prestamoId = button.getAttribute('data-prestamo-id');
+                registrarDevolucionAjax(prestamoId, usuarioId);
+            });
+        }
+
+        // Función para aplicar sanción masiva por retrasos
+        function aplicarSancionMasiva(usuarioId) {
+            // Obtener información del usuario desde el acordeón
+            const accordionItem = document.querySelector(`[data-usuario-id="${usuarioId}"]`).closest('.accordion-item');
+            const userInfo = accordionItem.querySelector('.accordion-button');
+            const userName = userInfo.querySelector('strong').textContent;
+            const userEmail = userInfo.querySelector('small').textContent;
+
+            // Contar total de días de retraso
+            const retrasoButtons = accordionItem.querySelectorAll('.btn-sancion-retraso');
+            let totalDiasRetraso = 0;
+            retrasoButtons.forEach(button => {
+                totalDiasRetraso += parseInt(button.getAttribute('data-dias-retraso')) || 0;
+            });
+
+            if (confirm(`¿Aplicar sanción por retraso acumulado de ${totalDiasRetraso} días a ${userName}?`)) {
+                abrirModalSancionPorRetraso(usuarioId, userName, userEmail, totalDiasRetraso);
+            }
+        }
+
+        // Función para actualizar estadísticas de préstamos
+        function actualizarEstadisticasPrestamos() {
+            fetch('/bibliotecario/ajax/estadisticas?tab=prestamos', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Actualizar estadísticas generales
+                    actualizarEstadisticasGenerales(data.estadisticas, 'prestamos');
+
+                    // Verificar si hay acordeones vacíos para remover
+                    verificarAcordeonesVacios('prestamos');
+                }
+            })
+            .catch(error => {
+                console.error('Error al actualizar estadísticas de préstamos:', error);
+            });
+        }
+
+        // Función para actualizar estadísticas de devoluciones
+        function actualizarEstadisticasDevoluciones() {
+            fetch('/bibliotecario/ajax/estadisticas?tab=devoluciones', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Actualizar estadísticas generales
+                    actualizarEstadisticasGenerales(data.estadisticas, 'devoluciones');
+
+                    // Verificar si hay acordeones vacíos para remover
+                    verificarAcordeonesVacios('devoluciones');
+                }
+            })
+            .catch(error => {
+                console.error('Error al actualizar estadísticas de devoluciones:', error);
+            });
+        }
+
+        // Función para actualizar estadísticas generales en el dashboard
+        function actualizarEstadisticasGenerales(estadisticas, tab) {
+            if (tab === 'prestamos') {
+                // Actualizar contadores de préstamos
+                const statsCards = document.querySelectorAll('#panel-prestamos .stats-card h4');
+                if (statsCards.length >= 4) {
+                    statsCards[0].textContent = estadisticas.pendientes || 0; // Pendientes
+                    statsCards[1].textContent = estadisticas.activos || 0;    // Activos
+                    statsCards[2].textContent = estadisticas.denegados || 0;  // Denegados
+                    statsCards[3].textContent = estadisticas.entregados || 0; // Completados
+                }
+            } else if (tab === 'devoluciones') {
+                // Para devoluciones, no hay estadísticas específicas que actualizar en las cards
+                // pero podríamos agregar contadores si fuera necesario
+            }
+        }
+
+        // Función para verificar y remover acordeones vacíos
+        function verificarAcordeonesVacios(tab) {
+            const acordeonSelector = tab === 'prestamos' ? '#acordeonPrestamos' : '#acordeonDevoluciones';
+            const acordeon = document.querySelector(acordeonSelector);
+
+            if (acordeon) {
+                const items = acordeon.querySelectorAll('.accordion-item');
+                items.forEach(item => {
+                    const accordionBody = item.querySelector('.accordion-body');
+                    const rows = accordionBody.querySelectorAll('tbody tr');
+
+                    if (rows.length === 0) {
+                        // Si no hay filas, remover el acordeón completo
+                        item.style.transition = 'opacity 0.3s ease';
+                        item.style.opacity = '0';
+                        setTimeout(() => {
+                            if (item.parentNode) {
+                                item.remove();
+
+                                // Verificar si el acordeón completo está vacío
+                                const remainingItems = acordeon.querySelectorAll('.accordion-item');
+                                if (remainingItems.length === 0) {
+                                    // Mostrar mensaje de estado vacío
+                                    mostrarEstadoVacio(tab);
+                                }
+                            }
+                        }, 300);
+                    }
+                });
+            }
+        }
+
+        // Función para mostrar estado vacío cuando no hay más elementos
+        function mostrarEstadoVacio(tab) {
+            const panelSelector = tab === 'prestamos' ? '#panel-prestamos' : '#panel-devoluciones';
+            const acordeonSelector = tab === 'prestamos' ? '#acordeonPrestamos' : '#acordeonDevoluciones';
+            const panel = document.querySelector(panelSelector);
+            const acordeon = document.querySelector(acordeonSelector);
+
+            if (panel && acordeon) {
+                const mensaje = tab === 'prestamos'
+                    ? 'No hay solicitudes de préstamos pendientes'
+                    : 'No hay devoluciones pendientes';
+                const descripcion = tab === 'prestamos'
+                    ? 'Todas las solicitudes han sido procesadas'
+                    : 'Todos los libros han sido devueltos';
+
+                const estadoVacio = document.createElement('div');
+                estadoVacio.className = 'empty-state';
+                estadoVacio.innerHTML = `
+                    <i class="bi bi-inbox"></i>
+                    <h5>${mensaje}</h5>
+                    <p class="text-muted">${descripcion}</p>
+                `;
+
+                // Reemplazar el acordeón con el estado vacío
+                acordeon.parentNode.replaceChild(estadoVacio, acordeon);
+            }
+        }
+
+        // Función para actualizar el badge de un acordeón específico
+        function actualizarBadgeAcordeon(usuarioId, tab) {
+            const acordeonSelector = tab === 'prestamos'
+                ? `#prestamos-usuario-${usuarioId}`
+                : `#devoluciones-usuario-${usuarioId}`;
+
+            const accordionItem = document.querySelector(`[data-bs-target="${acordeonSelector}"]`)?.closest('.accordion-item');
+
+            if (accordionItem) {
+                const accordionBody = accordionItem.querySelector('.accordion-body');
+                const rows = accordionBody?.querySelectorAll('tbody tr') || [];
+
+                if (rows.length === 0) {
+                    // Si no hay más filas, remover el acordeón
+                    accordionItem.style.transition = 'opacity 0.3s ease';
+                    accordionItem.style.opacity = '0';
+                    setTimeout(() => {
+                        if (accordionItem.parentNode) {
+                            accordionItem.remove();
+                            verificarAcordeonesVacios(tab);
+                        }
+                    }, 300);
+                } else {
+                    // Actualizar el badge con el nuevo conteo
+                    const button = accordionItem.querySelector('.accordion-button');
+                    const badge = button?.querySelector('.badge');
+
+                    if (badge && tab === 'prestamos') {
+                        badge.textContent = `${rows.length} solicitud(es) pendiente(s)`;
+                    } else if (tab === 'devoluciones') {
+                        // Para devoluciones, necesitamos recalcular los badges de "en plazo" y "atrasados"
+                        actualizarBadgesDevoluciones(accordionItem, rows);
+                    }
+                }
+            }
+        }
+
+        // Función para actualizar badges específicos de devoluciones (en plazo/atrasados)
+        function actualizarBadgesDevoluciones(accordionItem, rows) {
+            const badgeContainer = accordionItem.querySelector('.d-flex.gap-2.me-2');
+            if (!badgeContainer) return;
+
+            let atrasados = 0;
+            let enPlazo = 0;
+
+            rows.forEach(row => {
+                const estadoBadge = row.querySelector('.badge');
+                if (estadoBadge) {
+                    if (estadoBadge.classList.contains('bg-danger')) {
+                        atrasados++;
+                    } else if (estadoBadge.classList.contains('bg-success')) {
+                        enPlazo++;
+                    }
+                }
+            });
+
+            // Limpiar badges existentes
+            badgeContainer.innerHTML = '';
+
+            // Agregar badges actualizados
+            if (atrasados > 0) {
+                const badgeAtrasados = document.createElement('span');
+                badgeAtrasados.className = 'badge bg-danger';
+                badgeAtrasados.textContent = `${atrasados} atrasado(s)`;
+                badgeContainer.appendChild(badgeAtrasados);
+            }
+
+            if (enPlazo > 0) {
+                const badgeEnPlazo = document.createElement('span');
+                badgeEnPlazo.className = 'badge bg-success';
+                badgeEnPlazo.textContent = `${enPlazo} en plazo`;
+                badgeContainer.appendChild(badgeEnPlazo);
+            }
+        }
+
+        // ============ FIN FUNCIONES AJAX ============
+
         // Eventos de DOM cargado
         document.addEventListener('DOMContentLoaded', function () {
             // Configurar tab inicial
@@ -2454,8 +3266,72 @@
             showTab(tab);
 
             // Configurar eventos de búsqueda
-            document.getElementById('buscarUsuario').addEventListener('input', filtrarUsuarios);
-            document.getElementById('filtroSanciones').addEventListener('change', filtrarUsuarios);
+            document.getElementById('buscarUsuario')?.addEventListener('input', filtrarUsuarios);
+            document.getElementById('filtroSanciones')?.addEventListener('change', filtrarUsuarios);
+
+            // Event listeners para botones de sanción
+            document.querySelectorAll('.btn-sancion').forEach(button => {
+                button.addEventListener('click', function() {
+                    if (!this.disabled) {
+                        const usuarioId = this.getAttribute('data-usuario-id');
+                        const usuarioNombre = this.getAttribute('data-usuario-nombre');
+                        const usuarioEmail = this.getAttribute('data-usuario-email');
+                        abrirModalSancion(usuarioId, usuarioNombre, usuarioEmail);
+                    }
+                });
+            });
+
+            // Event listeners para botones de historial
+            document.querySelectorAll('.btn-historial').forEach(button => {
+                button.addEventListener('click', function() {
+                    const usuarioId = this.getAttribute('data-usuario-id');
+                    const usuarioNombre = this.getAttribute('data-usuario-nombre');
+                    verHistorialUsuario(usuarioId, usuarioNombre);
+                });
+            });
+
+            // Event listeners para botones de sanción por retraso
+            document.querySelectorAll('.btn-sancion-retraso').forEach(button => {
+                button.addEventListener('click', function() {
+                    const usuarioId = this.getAttribute('data-usuario-id');
+                    const usuarioNombre = this.getAttribute('data-usuario-nombre');
+                    const usuarioEmail = this.getAttribute('data-usuario-email');
+                    const diasRetraso = this.getAttribute('data-dias-retraso');
+                    abrirModalSancionPorRetraso(usuarioId, usuarioNombre, usuarioEmail, diasRetraso);
+                });
+            });
+
+            // Event listeners para botones AJAX de préstamos
+            document.querySelectorAll('.btn-confirmar-ajax').forEach(button => {
+                button.addEventListener('click', function() {
+                    const prestamoId = this.getAttribute('data-prestamo-id');
+                    const usuarioId = this.getAttribute('data-usuario-id');
+                    confirmarPrestamoAjax(prestamoId, usuarioId);
+                });
+            });
+
+            document.querySelectorAll('.btn-denegar-ajax').forEach(button => {
+                button.addEventListener('click', function() {
+                    const prestamoId = this.getAttribute('data-prestamo-id');
+                    const usuarioId = this.getAttribute('data-usuario-id');
+                    const libroTitulo = this.getAttribute('data-libro-titulo');
+                    const usuarioEmail = this.getAttribute('data-usuario-email');
+
+                    const observaciones = prompt(`Motivo para denegar el préstamo del libro "${libroTitulo}" a ${usuarioEmail}:`);
+                    if (observaciones) {
+                        denegarPrestamoAjax(prestamoId, usuarioId, observaciones);
+                    }
+                });
+            });
+
+            // Event listeners para botones AJAX de devoluciones
+            document.querySelectorAll('.btn-devolucion-ajax').forEach(button => {
+                button.addEventListener('click', function() {
+                    const prestamoId = this.getAttribute('data-prestamo-id');
+                    const usuarioId = this.getAttribute('data-usuario-id');
+                    registrarDevolucionAjax(prestamoId, usuarioId);
+                });
+            });
 
             // Inicializar tema
             const savedTheme = localStorage.getItem('theme') || 'light';

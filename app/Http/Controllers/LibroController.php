@@ -94,8 +94,16 @@ class LibroController extends Controller
             if ($request->hasFile('portada')) {
                 $file = $request->file('portada');
                 $nombre = 'portada_' . uniqid() . '.' . $file->getClientOriginalExtension();
-                $ruta = $file->storeAs('img/portadas', $nombre, 'public');
-                $validated['portada'] = 'storage/' . $ruta;
+
+                // Crear directorio si no existe
+                $directorioPortadas = public_path('img/portadas');
+                if (!file_exists($directorioPortadas)) {
+                    mkdir($directorioPortadas, 0755, true);
+                }
+
+                // Mover archivo a public/img/portadas
+                $file->move($directorioPortadas, $nombre);
+                $validated['portada'] = 'img/portadas/' . $nombre;
             }
 
             // Si el campo año está vacío, ponerlo como null
@@ -149,18 +157,29 @@ class LibroController extends Controller
     // Actualiza libro
     public function update(Request $request, $id)
     {
-        $request->validate([
-            'codigo'            => "required|string|max:50|unique:libro,codigo,{$id},id_libro",
-            'titulo'            => 'required|string|max:255',
-            'autor'             => 'nullable|string|max:150',
-            'editorial'         => 'nullable|string|max:150',
-            'anio_publicacion'  => 'nullable|integer|between:1901,' . date('Y'),
-            'categoria_id'      => 'nullable|exists:categoria,id_categoria',
-            'cantidad'          => 'required|integer|min:1',
-            'disponibles'       => 'required|integer|min:0',
-            'estado'            => 'required|in:disponible,prestado,dañado',
-            'portada'           => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
-        ]);
+        try {
+            $request->validate([
+                'codigo'            => "required|string|max:50|unique:libro,codigo,{$id},id_libro",
+                'titulo'            => 'required|string|max:255',
+                'autor'             => 'nullable|string|max:150',
+                'editorial'         => 'nullable|string|max:150',
+                'anio_publicacion'  => 'nullable|integer|between:1901,' . date('Y'),
+                'categoria_id'      => 'nullable|exists:categoria,id_categoria',
+                'cantidad'          => 'required|integer|min:1',
+                'disponibles'       => 'required|integer|min:0',
+                'estado'            => 'required|in:disponible,prestado,dañado',
+                'portada'           => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+            ]);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            if ($request->ajax() || $request->wantsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Error de validación',
+                    'errors' => $e->errors()
+                ], 422);
+            }
+            throw $e;
+        }
 
         $libro = Libro::findOrFail($id);
 
@@ -183,17 +202,45 @@ class LibroController extends Controller
         try {
             // Subida nueva de portada (si aplica)
             if ($request->hasFile('portada')) {
-                $file     = $request->file('portada');
+                // Eliminar portada anterior si existe
+                if ($libro->portada && file_exists(public_path($libro->portada))) {
+                    unlink(public_path($libro->portada));
+                }
+
+                $file = $request->file('portada');
                 $filename = uniqid('portada_') . '.' . $file->getClientOriginalExtension();
-                $file->move(public_path('img/portadas'), $filename);
+
+                // Crear directorio si no existe
+                $directorioPortadas = public_path('img/portadas');
+                if (!file_exists($directorioPortadas)) {
+                    mkdir($directorioPortadas, 0755, true);
+                }
+
+                $file->move($directorioPortadas, $filename);
                 $data['portada'] = 'img/portadas/' . $filename;
             }
 
             $libro->update($data);
 
+            // Si es una petición AJAX, devolver respuesta JSON
+            if ($request->ajax() || $request->wantsJson()) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Libro actualizado correctamente.'
+                ]);
+            }
+
             // Redirige al panel de administrador (ajusta la ruta si es diferente)
             return redirect()->route('admin.panel')->with('success', 'Libro actualizado correctamente.');
         } catch (\Exception $e) {
+            // Si es una petición AJAX, devolver error JSON
+            if ($request->ajax() || $request->wantsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Ocurrió un error al actualizar el libro: ' . $e->getMessage()
+                ], 422);
+            }
+
             return back()->withInput()->with('error', 'Ocurrió un error al actualizar el libro: ' . $e->getMessage());
         }
     }
@@ -231,5 +278,23 @@ class LibroController extends Controller
         } catch (\Exception $e) {
             return redirect()->route('admin.panel')->with('error', 'Ocurrió un error inesperado al eliminar el libro: ' . $e->getMessage());
         }
+    }
+
+    // Método AJAX para obtener datos de un libro para edición
+    public function getEditData(Libro $libro)
+    {
+        return response()->json([
+            'id_libro' => $libro->id_libro,
+            'codigo' => $libro->codigo,
+            'titulo' => $libro->titulo,
+            'autor' => $libro->autor,
+            'editorial' => $libro->editorial,
+            'anio_publicacion' => $libro->anio_publicacion,
+            'categoria_id' => $libro->categoria_id,
+            'cantidad' => $libro->cantidad,
+            'disponibles' => $libro->disponibles,
+            'estado' => $libro->estado,
+            'portada' => $libro->portada ? imagen_libro($libro->portada) : null
+        ]);
     }
 }

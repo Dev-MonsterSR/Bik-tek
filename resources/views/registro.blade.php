@@ -93,9 +93,25 @@
                                     <input type="text" class="form-control" id="apellido" name="apellido" value="{{ old('apellido') }}" required>
                                 </div>
                             </div>
+                            <div class="row mb-3">
+                                <div class="col-md-6 mb-3 mb-md-0">
+                                    <label for="dni" class="form-label">DNI</label>
+                                    <input type="text" class="form-control" id="dni" name="dni" value="{{ old('dni') }}" pattern="[0-9]{8}" maxlength="8" placeholder="12345678" required>
+                                    <div class="form-text">8 dígitos</div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="codigo_estudiante" class="form-label">Código de Estudiante</label>
+                                    <input type="text" class="form-control" id="codigo_estudiante" name="codigo_estudiante" value="{{ old('codigo_estudiante') }}" placeholder="C20210001" required>
+                                </div>
+                            </div>
                             <div class="mb-3">
-                                <label for="email" class="form-label">Correo electrónico</label>
-                                <input type="email" class="form-control" id="email" name="email" value="{{ old('email') }}" required>
+                                <label for="email" class="form-label">Correo electrónico institucional</label>
+                                <div class="input-group">
+                                    <input type="text" class="form-control" id="email_username" name="email_username" value="{{ old('email_username') }}" placeholder="tu.nombre" required>
+                                    <span class="input-group-text">@tecsup.edu.pe</span>
+                                </div>
+                                <input type="hidden" id="email" name="email" value="{{ old('email') }}">
+                                <div class="form-text">Usa tu correo institucional de Tecsup</div>
                             </div>
                             <div class="mb-3">
                                 <label for="password" class="form-label">Contraseña</label>
@@ -117,5 +133,25 @@
     </section>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Validación del DNI (solo números, 8 dígitos)
+        document.getElementById('dni').addEventListener('input', function() {
+            this.value = this.value.replace(/[^0-9]/g, '').slice(0, 8);
+        });
+
+        // Combinar email antes de enviar el formulario
+        document.querySelector('form').addEventListener('submit', function(e) {
+            const emailUsername = document.getElementById('email_username').value;
+            const fullEmail = emailUsername + '@tecsup.edu.pe';
+
+            // Actualizar el campo oculto con el email completo
+            document.getElementById('email').value = fullEmail;
+        });
+
+        // Validación en tiempo real del código de estudiante
+        document.getElementById('codigo_estudiante').addEventListener('input', function() {
+            this.value = this.value.toUpperCase();
+        });
+    </script>
 </body>
 </html>

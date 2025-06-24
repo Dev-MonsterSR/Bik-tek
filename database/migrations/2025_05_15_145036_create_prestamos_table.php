@@ -16,7 +16,7 @@ class CreatePrestamosTable extends Migration
             $table->date('fecha_devolucion');
             $table->date('fecha_entrega_real')->nullable();
             // Incluye los nuevos valores en el enum:
-            $table->enum('estado', ['pendiente', 'activo', 'entregado', 'retraso', 'denegado'])->default('pendiente');
+            $table->enum('estado', ['pendiente', 'activo', 'entregado','devuelto', 'retraso', 'denegado'])->default('pendiente');
             $table->timestamps();
 
             $table->foreign('id_libro')->references('id_libro')->on('libro');

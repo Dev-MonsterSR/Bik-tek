@@ -32,6 +32,7 @@ Route::resource('prestamos', PrestamoController::class)->except(['edit', 'update
 // Rutas para bibliotecarios
 Route::prefix('bibliotecario')->group(function () {
     Route::get('/dashboard', [BibliotecarioController::class, 'dashboard'])->name('bibliotecario.dashboard');
+    Route::get('/buscar-usuarios', [BibliotecarioController::class, 'buscarUsuarios'])->name('bibliotecario.buscarUsuarios');
     Route::post('/prestamo/{id}/confirmar', [BibliotecarioController::class, 'confirmarPrestamo'])->name('bibliotecario.confirmarPrestamo');
     Route::post('/devolucion', [BibliotecarioController::class, 'registrarDevolucion'])->name('bibliotecario.registrarDevolucion');
     Route::post('/sancion', [BibliotecarioController::class, 'aplicarSancion'])->name('bibliotecario.aplicarSancion');
@@ -41,6 +42,12 @@ Route::prefix('bibliotecario')->group(function () {
     Route::get('/usuario/{id}/prestamos', [BibliotecarioController::class, 'getPrestamosUsuario'])->name('bibliotecario.getPrestamosUsuario');
     Route::post('/libro/{codigo}/disponibilidad', [BibliotecarioController::class, 'modificarDisponibilidad'])->name('bibliotecario.modificarDisponibilidad');
     Route::post('/prestamo/{id}/denegar', [BibliotecarioController::class, 'denegarPrestamo'])->name('bibliotecario.denegarPrestamo');
+
+    // Rutas AJAX
+    Route::post('/ajax/prestamo/{id}/confirmar', [BibliotecarioController::class, 'confirmarPrestamoAjax'])->name('bibliotecario.confirmarPrestamoAjax');
+    Route::post('/ajax/prestamo/{id}/denegar', [BibliotecarioController::class, 'denegarPrestamoAjax'])->name('bibliotecario.denegarPrestamoAjax');
+    Route::post('/ajax/devolucion', [BibliotecarioController::class, 'registrarDevolucionAjax'])->name('bibliotecario.registrarDevolucionAjax');
+    Route::get('/ajax/estadisticas', [BibliotecarioController::class, 'obtenerEstadisticasAjax'])->name('bibliotecario.obtenerEstadisticasAjax');
 });
 
 // Rutas para administradores
@@ -52,6 +59,13 @@ Route::prefix('admin')->group(function () {
     // Rutas para gestión de sanciones
     Route::post('/sanciones/{accion}/{id?}', [AdministradorController::class, 'gestionarSancion'])->name('admin.sanciones.gestionar');
     Route::get('/sanciones/{accion}', [AdministradorController::class, 'gestionarSancion'])->name('admin.sanciones.gestionar');
+
+    // Ruta AJAX para obtener datos de libro para edición
+    Route::get('/libros/{libro}/edit-data', [LibroController::class, 'getEditData'])->name('admin.libros.editData');
+
+    // Rutas AJAX para detalles de usuarios y trabajadores
+    Route::get('/trabajador-detalles/{id}', [AdministradorController::class, 'getDetallesTrabajador'])->name('admin.trabajador.detalles');
+    Route::get('/usuario-detalles/{id}', [AdministradorController::class, 'getDetallesUsuario'])->name('admin.usuario.detalles');
 
     Route::resource('usuarios', UsuarioController::class);
     Route::resource('trabajadores', TrabajadorController::class);
@@ -70,5 +84,9 @@ Route::resource('trabajadores', TrabajadorController::class)->parameters([
     'trabajadores' => 'trabajador'
 ])->except(['index']);
 
-// Ruta para el dashboard del trabajador
+// Rutas para el dashboard del trabajador
 Route::get('/trabajador/dashboard', [BibliotecarioController::class, 'dashboard'])->name('trabajador.dashboard');
+
+// Rutas AJAX para detalles (usado por el panel de administrador)
+Route::get('/administrador/trabajador-detalles/{id}', [AdministradorController::class, 'getDetallesTrabajador'])->name('administrador.trabajador.detalles');
+Route::get('/administrador/usuario-detalles/{id}', [AdministradorController::class, 'getDetallesUsuario'])->name('administrador.usuario.detalles');

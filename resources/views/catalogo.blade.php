@@ -190,7 +190,7 @@
                         <div class="col-md-6 col-lg-4">
                             <div class="card book-card h-100">
                                 <img
-                                    src="{{ $libro->portada ? asset($libro->portada) : asset('img/Libro1.jpg') }}"
+                                    src="{{ imagen_libro($libro->portada) }}"
                                     class="card-img-top"
                                     alt="{{ $libro->titulo }}"
                                 >
@@ -363,7 +363,16 @@ document.addEventListener('DOMContentLoaded', function () {
         var libro = button.getAttribute('data-libro');
         if (libro) {
             libro = JSON.parse(libro.replace(/&quot;/g,'"'));
-            document.getElementById('detalleLibroPortada').src = libro.portada ? '/' + libro.portada : '/img/Libro1.jpg';
+            // Determinar la URL correcta de la imagen
+            let imagenUrl = '/img/Libro1.jpg'; // imagen por defecto
+            if (libro.portada) {
+                if (libro.portada.startsWith('storage/') || libro.portada.startsWith('img/')) {
+                    imagenUrl = '/' + libro.portada;
+                } else {
+                    imagenUrl = '/img/portadas/' + libro.portada;
+                }
+            }
+            document.getElementById('detalleLibroPortada').src = imagenUrl;
             document.getElementById('detalleLibroTitulo').textContent = libro.titulo;
             document.getElementById('detalleLibroAutor').textContent = libro.autor;
             document.getElementById('detalleLibroCategoria').textContent = libro.categoria?.nombre ?? 'Sin categoría';

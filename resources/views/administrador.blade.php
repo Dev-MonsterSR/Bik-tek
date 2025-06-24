@@ -193,10 +193,173 @@
 
         .spin { animation: spin 1s linear infinite; }
 
+        /* Estilos para modal de edición */
+        .edit-form-row {
+            display: flex;
+            gap: 24px;
+        }
+        .edit-form-col {
+            flex: 1 1 0;
+        }
+        .img-preview {
+            border: 1px solid #e3e3e3;
+            background: #fff;
+            padding: 6px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            transition: box-shadow 0.3s;
+        }
+        .img-preview img {
+            transition: transform 0.3s;
+        }
+        .img-preview img:hover {
+            transform: scale(1.08) rotate(-2deg);
+        }
+
+        /* Modo oscuro para modal de edición */
+        body.dark-mode .img-preview {
+            border-color: #555;
+            background: #3a4148;
+        }
+        .edit-form-row {
+            display: flex;
+            gap: 16px;
+        }
+        .edit-form-col {
+            flex: 1 1 0;
+        }
+
+        .img-preview {
+            border: 1px solid #e3e3e3;
+            background: #fff;
+            padding: 6px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            transition: box-shadow 0.3s;
+        }
+
+        .img-preview img {
+            transition: transform 0.3s;
+        }
+
+        .img-preview img:hover {
+            transform: scale(1.08) rotate(-2deg);
+        }
+
+        /* Modo oscuro para modal de edición */
+        body.dark-mode .img-preview {
+            border-color: #555;
+            background: #3a4148;
+        }
+
+        body.dark-mode .modal-content {
+            background-color: #2d3238 !important;
+            color: #f1f1f1 !important;
+        }
+
+        body.dark-mode .modal-header {
+            background: linear-gradient(90deg, #0B5ED7 60%, #0B1C2B 100%) !important;
+            color: #fff !important;
+            border-bottom-color: #444 !important;
+        }
+
+        body.dark-mode .modal-body {
+            background-color: #2d3238 !important;
+            color: #f1f1f1 !important;
+        }
+
+        body.dark-mode .modal-footer {
+            background-color: #2d3238 !important;
+            border-top-color: #444 !important;
+        }
+
+        /* Estilos para Toasts */
+        .toast {
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        body.dark-mode .toast {
+            background-color: #374151 !important;
+            border-color: #4b5563;
+            color: #f9fafb !important;
+        }
+
+        body.dark-mode .toast .toast-body {
+            color: #f9fafb !important;
+        }
+
+        body.dark-mode .toast.text-success {
+            background-color: #065f46 !important;
+            color: #d1fae5 !important;
+        }
+
+        body.dark-mode .toast.text-success .toast-body {
+            color: #d1fae5 !important;
+        }
+
+        body.dark-mode .toast.text-danger {
+            background-color: #7f1d1d !important;
+            color: #fecaca !important;
+        }
+
+        body.dark-mode .toast.text-danger .toast-body {
+            color: #fecaca !important;
+        }
+
+        body.dark-mode .toast.text-info {
+            background-color: #0c4a6e !important;
+            color: #bae6fd !important;
+        }
+
+        body.dark-mode .toast.text-info .toast-body {
+            color: #bae6fd !important;
+        }
+
+        body.dark-mode .btn-close-dark {
+            filter: brightness(0) saturate(100%) invert(89%) sepia(6%) saturate(106%) hue-rotate(204deg) brightness(106%) contrast(106%);
+        }
+
+        /* Estilos para modales de detalles */
+        .info-card {
+            border: 1px solid #e9ecef;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        body.dark-mode .modal-content {
+            background-color: #2d3238 !important;
+            color: #f1f1f1 !important;
+            border-color: #444 !important;
+        }
+
+        body.dark-mode .modal-header {
+            background-color: #17a2b8 !important;
+            border-bottom-color: #444 !important;
+        }
+
+        body.dark-mode .modal-footer {
+            background-color: #3a4148 !important;
+            border-top-color: #444 !important;
+        }
+
+        body.dark-mode .info-card {
+            background-color: #3a4148 !important;
+            color: #f1f1f1 !important;
+            border-color: #555 !important;
+        }
+
+        body.dark-mode .badge {
+            background-color: #198754 !important;
+        }
+
         /* Responsivo */
         @media (max-width: 768px) {
             .metric-icon { display: none; }
             .sidebar { min-height: auto; }
+            .edit-form-row {
+                flex-direction: column;
+                gap: 0;
+            }
         }
     </style>
 </head>
@@ -252,7 +415,7 @@
                         <p class="text-muted mb-0">Análisis completo del sistema bibliotecario</p>
                     </div>
                     <div class="d-flex gap-2">
-                        <button class="btn btn-outline-primary btn-sm" onclick="exportarDatos()">
+                        <button class="btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#modalExportar">
                             <i class="bi bi-download me-1"></i>Exportar
                         </button>
                         <button class="btn btn-primary btn-sm" onclick="actualizarDatos()">
@@ -694,7 +857,7 @@
                         </button>
                     </div>
                     <div class="table-responsive">
-                        <table class="table table-bordered align-middle">
+                        <table class="table table-bordered align-middle" id="tablaLibros">
                             <thead>
                         <tr>
                             <th>Código</th>
@@ -724,15 +887,15 @@
                                 </td>
                                 <td>
                                     @if($libro->portada)
-                                        <img src="{{ asset($libro->portada) }}" alt="Portada" width="40" height="60">
+                                        <img src="{{ imagen_libro($libro->portada) }}" alt="Portada" width="40" height="60">
                                     @else
                                         <span class="text-muted">Sin portada</span>
                                     @endif
                                 </td>
                                 <td>
-                                    <a href="{{ route('libros.edit', $libro->id_libro) }}" class="btn btn-sm btn-warning" title="Editar libro">
+                                    <button class="btn btn-sm btn-warning" onclick="abrirModalEditarLibro({{ $libro->id_libro }})" title="Editar libro">
                                         <i class="bi bi-pencil"></i>
-                                    </a>
+                                    </button>
                                     @php
                                         $prestamosActivos = $libro->prestamos()->whereIn('estado', ['pendiente', 'activo', 'retraso'])->count();
                                     @endphp
@@ -803,6 +966,9 @@
                                         <td>Bibliotecario</td>
                                         <td>{{ $trabajador->email }}</td>
                                         <td>
+                                            <button class="btn btn-sm btn-info me-1" onclick="verDetallesTrabajador({{ $trabajador->id_trabajador }})">
+                                                <i class="bi bi-eye"></i>
+                                            </button>
                                             <form action="{{ route('trabajadores.destroy', $trabajador) }}" method="POST" style="display:inline;">
                                                 @csrf
                                                 @method('DELETE')
@@ -836,6 +1002,9 @@
                                         <td>{{ $usuario->email }}</td>
                                         <td>{{ $usuario->fecha_registro }}</td>
                                         <td>
+                                            <button class="btn btn-sm btn-info me-1" onclick="verDetallesUsuario({{ $usuario->id_usuario }})">
+                                                <i class="bi bi-eye"></i>
+                                            </button>
                                             <form action="{{ route('usuarios.destroy', $usuario) }}" method="POST" style="display:inline;">
                                                 @csrf
                                                 @method('DELETE')
@@ -1058,11 +1227,111 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
+        // Sistema de Toasts para notificaciones no bloqueantes
+        function showToast(message, type = 'success', duration = 4000) {
+            const toastContainer = document.querySelector('.toast-container');
+            const toastId = 'toast-' + Date.now();
+
+            // Iconos según el tipo
+            const icons = {
+                success: 'bi-check-circle-fill',
+                error: 'bi-exclamation-triangle-fill',
+                info: 'bi-info-circle-fill'
+            };
+
+            // Colores según el tipo
+            const colors = {
+                success: 'text-success bg-light',
+                error: 'text-danger bg-light',
+                info: 'text-info bg-light'
+            };
+
+            // Determinar si estamos en modo oscuro
+            const isDarkMode = document.body.classList.contains('dark-mode');
+            const closeButtonClass = isDarkMode ? 'btn-close btn-close-white' : 'btn-close btn-close-dark';
+
+            const toastHtml = `
+                <div id="${toastId}" class="toast align-items-center ${colors[type]} border-0" role="alert" aria-live="assertive" aria-atomic="true">
+                    <div class="d-flex">
+                        <div class="toast-body">
+                            <i class="bi ${icons[type]} me-2"></i>
+                            ${message}
+                        </div>
+                        <button type="button" class="${closeButtonClass} me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                    </div>
+                </div>
+            `;
+
+            toastContainer.insertAdjacentHTML('beforeend', toastHtml);
+
+            const toastElement = document.getElementById(toastId);
+            const toast = new bootstrap.Toast(toastElement, {
+                delay: duration,
+                autohide: true
+            });
+
+            // Mostrar el toast
+            toast.show();
+
+            // Remover del DOM después de que se oculte
+            toastElement.addEventListener('hidden.bs.toast', function() {
+                toastElement.remove();
+            });
+        }
+
+        // Funciones auxiliares para tipos específicos
+        function showSuccessToast(message, duration = 4000) {
+            showToast(message, 'success', duration);
+        }
+
+        function showErrorToast(message, duration = 6000) {
+            showToast(message, 'error', duration);
+        }
+
+
+
+        function showInfoToast(message, duration = 4000) {
+            showToast(message, 'info', duration);
+        }
+
+        // Función global para restaurar el scroll y limpiar modales
+        function restaurarScrollYLimpiarModales() {
+            // Remover todos los backdrops que puedan quedar
+            document.querySelectorAll('.modal-backdrop').forEach(backdrop => {
+                backdrop.remove();
+            });
+
+            // Restaurar todas las propiedades del body
+            document.body.classList.remove('modal-open');
+            document.body.style.removeProperty('overflow');
+            document.body.style.removeProperty('padding-right');
+            document.body.style.overflow = '';
+            document.body.style.paddingRight = '';
+
+            // Forzar overflow visible si está oculto
+            if (document.body.style.overflow === 'hidden') {
+                document.body.style.overflow = 'auto';
+            }
+
+            // Limpiar clases de Bootstrap que puedan estar bloqueando
+            const html = document.documentElement;
+            html.style.removeProperty('overflow');
+            html.style.removeProperty('padding-right');
+
+            // Forzar repaint
+            document.body.offsetHeight;
+
+            console.log('Scroll restaurado - Body overflow:', document.body.style.overflow);
+        }
+
         let graficoPrincipal = null;
         let graficoEstados = null;
 
         // Navegación entre paneles
         function showTab(tab) {
+            // Asegurar que el scroll esté funcionando al cambiar pestañas
+            restaurarScrollYLimpiarModales();
+
             // Ocultar todos los paneles
             document.querySelectorAll('[id^="panel-"]').forEach(panel => {
                 panel.style.display = 'none';
@@ -1260,6 +1529,10 @@
                         headers = '<tr><th>#</th><th>Libro</th><th>Usuario</th><th>Fecha</th><th>Estado</th></tr>';
                     } else if (tipo === 'libros') {
                         headers = '<tr><th>#</th><th>Libro</th><th>Autor</th><th>Préstamos</th></tr>';
+                    } else if (tipo === 'sanciones') {
+                        headers = '<tr><th>#</th><th>Usuario</th><th>Días</th><th>Inicio</th><th>Fin</th></tr>';
+                    } else if (tipo === 'inventario') {
+                        headers = '<tr><th>#</th><th>Código</th><th>Título</th><th>Autor</th><th>Categoría</th><th>Cantidad</th><th>Disponibles</th><th>Estado</th></tr>';
                     }
                     thead.innerHTML = headers;
 
@@ -1274,6 +1547,10 @@
                             rows += `<tr><td>${index + 1}</td><td>${item.libro}</td><td>${item.usuario}</td><td>${item.fecha}</td><td>${item.estado}</td></tr>`;
                         } else if (tipo === 'libros') {
                             rows += `<tr><td>${index + 1}</td><td>${item.libro}</td><td>${item.autor}</td><td>${item.total}</td></tr>`;
+                        } else if (tipo === 'sanciones') {
+                            rows += `<tr><td>${index + 1}</td><td>${item.usuario}</td><td>${item.dias}</td><td>${item.inicio}</td><td>${item.fin}</td></tr>`;
+                        } else if (tipo === 'inventario') {
+                            rows += `<tr><td>${index + 1}</td><td>${item.codigo}</td><td>${item.titulo}</td><td>${item.autor}</td><td>${item.categoria}</td><td>${item.cantidad}</td><td>${item.disponibles}</td><td>${item.estado}</td></tr>`;
                         }
                     });
                     tbody.innerHTML = rows;
@@ -1296,20 +1573,24 @@
         }
 
         function exportarDatos() {
-            const tipo = document.getElementById('tipoGrafico').value;
-            const link = document.createElement('a');
-            link.href = `{{ route('admin.reportes.tabla') }}?tipo=${tipo}&export=1`;
-            link.download = `reporte_${tipo}_${new Date().toISOString().split('T')[0]}.csv`;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
+            // Abrir el modal de exportar en lugar de exportar directamente
+            const modal = new bootstrap.Modal(document.getElementById('modalExportar'));
 
-            const btn = event.target;
-            const originalText = btn.innerHTML;
-            btn.innerHTML = '<i class="bi bi-download me-1"></i>Descargando...';
-            setTimeout(() => {
-                btn.innerHTML = originalText;
-            }, 2000);
+            // Pre-llenar el tipo basado en el gráfico actual si está disponible
+            const tipoGrafico = document.getElementById('tipoGrafico');
+            if (tipoGrafico) {
+                const tipoActual = tipoGrafico.value;
+                // Mapear tipos de gráfico a tipos de reporte
+                const mapeoTipos = {
+                    'mensual': 'prestamos',
+                    'semanal': 'prestamos',
+                    'anual': 'prestamos'
+                };
+                const tipoReporte = mapeoTipos[tipoActual] || 'prestamos';
+                document.getElementById('export_tipo').value = tipoReporte;
+            }
+
+            modal.show();
         }
 
         // Modo oscuro
@@ -1373,8 +1654,7 @@
                                                 </button>` : ''
                                             }
                                             <button class="btn btn-outline-danger" onclick="eliminarSancion(${sancion.id})" title="Eliminar">
-                                                <i class="bi bi-trash"></i>
-                                            </button>
+                                                <i class="bi bi-trash"></i                                            </button>
                                         </div>
                                     </td>
                                 </tr>
@@ -1410,16 +1690,16 @@
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        alert(data.message);
+                        showSuccessToast(data.message);
                         cargarTablaSanciones();
                         cargarMetricasSanciones();
                     } else {
-                        alert('Error: ' + data.message);
+                        showErrorToast('Error: ' + data.message);
                     }
                 })
                 .catch(error => {
                     console.error('Error:', error);
-                    alert('Error al procesar la solicitud');
+                    showErrorToast('Error al procesar la solicitud');
                 });
             }
         }
@@ -1436,16 +1716,16 @@
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        alert(data.message);
+                        showSuccessToast(data.message);
                         cargarTablaSanciones();
                         cargarMetricasSanciones();
                     } else {
-                        alert('Error: ' + data.message);
+                        showErrorToast('Error: ' + data.message);
                     }
                 })
                 .catch(error => {
                     console.error('Error:', error);
-                    alert('Error al procesar la solicitud');
+                    showErrorToast('Error al procesar la solicitud');
                 });
             }
         }
@@ -1535,6 +1815,52 @@
             // Cargar datos iniciales
             cargarDatos();
 
+            // Mostrar toast de bienvenida (después de un pequeño delay para que se cargue la página)
+            setTimeout(() => {
+                showInfoToast('¡Bienvenido al Dashboard! Ahora las notificaciones no bloquearán la interfaz.', 3000);
+            }, 1000);
+
+            // Agregar listeners globales para todos los modales
+            document.addEventListener('hidden.bs.modal', function(event) {
+                // Restaurar scroll cuando cualquier modal se cierre
+                setTimeout(() => {
+                    restaurarScrollYLimpiarModales();
+                }, 50);
+            });
+
+            // Listeners adicionales para eventos de teclado (ESC)
+            document.addEventListener('keydown', function(event) {
+                if (event.key === 'Escape') {
+                    setTimeout(() => {
+                        restaurarScrollYLimpiarModales();
+                    }, 100);
+                }
+            });
+
+            // Listener global para clicks en backdrops o fuera de modales
+            document.addEventListener('click', function(event) {
+                if (event.target.classList.contains('modal-backdrop') ||
+                    event.target.classList.contains('modal') ||
+                    event.target.closest('.modal-backdrop')) {
+                    setTimeout(() => {
+                        restaurarScrollYLimpiarModales();
+                    }, 200);
+                }
+            });
+
+            // Agregar atributo data-libro-id a las filas de la tabla para facilitar la búsqueda
+            const filasLibros = document.querySelectorAll('#tablaLibros tbody tr');
+            filasLibros.forEach(fila => {
+                const btnEditar = fila.querySelector('.btn-warning[onclick*="abrirModalEditarLibro"]');
+                if (btnEditar) {
+                    const onclick = btnEditar.getAttribute('onclick');
+                    const match = onclick.match(/abrirModalEditarLibro\((\d+)\)/);
+                    if (match) {
+                        fila.setAttribute('data-libro-id', match[1]);
+                    }
+                }
+            });
+
             // Envío AJAX para agregar libro
             const libroForm = document.querySelector('#modalLibro form');
             if (libroForm) {
@@ -1590,7 +1916,7 @@
                     } catch (error) {
                         console.error('Error:', error);
                         if (error.message !== 'Errores de validación') {
-                            alert('Error al guardar: ' + error.message);
+                            showErrorToast('Error al guardar: ' + error.message);
                         }
                     } finally {
                         submitBtn.disabled = false;
@@ -1598,7 +1924,266 @@
                     }
                 });
             }
+
+            // Manejar envío del formulario de exportación
+            const formExportar = document.getElementById('formExportar');
+            if (formExportar) {
+                formExportar.addEventListener('submit', function(e) {
+                    e.preventDefault();
+
+                    // IMPORTANTE: Cerrar modal inmediatamente para evitar bloqueos de UI
+                    // Cerrar modal inmediatamente y limpiar backdrop
+                    const modalElement = document.getElementById('modalExportar');
+                    const modalInstance = bootstrap.Modal.getInstance(modalElement);
+                    if (modalInstance) {
+                        modalInstance.hide();
+                    }
+
+                    // Función para limpiar completamente el modal y restaurar el scroll
+                    function limpiarModalCompletamente() {
+                        restaurarScrollYLimpiarModales();
+                    }
+
+                    // Ejecutar limpieza inmediatamente y con delays para asegurar
+                    limpiarModalCompletamente();
+                    setTimeout(limpiarModalCompletamente, 50);
+                    setTimeout(limpiarModalCompletamente, 200);
+                    setTimeout(limpiarModalCompletamente, 500);
+
+                    const tipo = document.getElementById('export_tipo').value;
+                    const fechaInicio = document.getElementById('export_fecha_inicio').value;
+                    const fechaFin = document.getElementById('export_fecha_fin').value;
+                    const formato = document.getElementById('export_formato').value;
+
+                    // Construir URL de exportación
+                    const params = new URLSearchParams({
+                        tipo: tipo,
+                        export: '1',
+                        formato: formato
+                    });
+
+                    if (fechaInicio) params.append('inicio', fechaInicio);
+                    if (fechaFin) params.append('fin', fechaFin);
+
+                    const url = `{{ route('admin.reportes.tabla') }}?${params.toString()}`;
+
+                    // Mostrar mensaje de descarga
+                    const btn = this.querySelector('button[type="submit"]');
+                    const originalText = btn.innerHTML;
+                    btn.innerHTML = '<i class="bi bi-download me-2"></i>Descargando...';
+                    btn.disabled = true;
+
+                    // Usar window.open como método más confiable para la descarga
+                    const downloadWindow = window.open(url, '_blank');
+
+                    // Si window.open falla, usar fetch como respaldo
+                    if (!downloadWindow || downloadWindow.closed || typeof downloadWindow.closed === 'undefined') {
+                        // Usar fetch para descargar el archivo
+                        fetch(url, {
+                            method: 'GET',
+                            headers: {
+                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                                'Accept': 'application/octet-stream'
+                            }
+                        })
+                            .then(response => {
+                                if (!response.ok) {
+                                    throw new Error('Error en la respuesta del servidor');
+                                }
+                                return response.blob();
+                            })
+                            .then(blob => {
+                                // Crear enlace de descarga
+                                const link = document.createElement('a');
+                                const objectUrl = window.URL.createObjectURL(blob);
+                                link.href = objectUrl;
+
+                                // Obtener nombre del archivo
+                                const filename = `reporte_${tipo}_${new Date().toISOString().split('T')[0]}.${formato === 'excel' ? 'xlsx' : 'csv'}`;
+                                link.download = filename;
+
+                                // Agregar al DOM temporalmente y hacer clic
+                                document.body.appendChild(link);
+                                link.click();
+
+                                // Limpiar
+                                document.body.removeChild(link);
+                                window.URL.revokeObjectURL(objectUrl);
+
+                                // Mostrar mensaje de éxito con delay
+                                setTimeout(() => {
+                                    showSuccessToast('Archivo descargado exitosamente');
+                                }, 300);
+                            })
+                            .catch(error => {
+                                console.error('Error:', error);
+                                // Mostrar error con delay
+                                setTimeout(() => {
+                                    showErrorToast('Error al descargar el archivo: ' + error.message);
+                                }, 300);
+                            })
+                            .finally(() => {
+                                // Restaurar botón
+                                btn.innerHTML = originalText;
+                                btn.disabled = false;
+                            });
+                    } else {
+                        // Si window.open funcionó, solo restaurar el botón
+                        setTimeout(() => {
+                            btn.innerHTML = originalText;
+                            btn.disabled = false;
+                            // Delay para el toast para asegurar que el modal se haya cerrado
+                            setTimeout(() => {
+                                showInfoToast('Descarga iniciada en nueva ventana');
+                            }, 300);
+                        }, 1000);
+                    }
+                });
+            }
+
+            // Establecer fechas por defecto en el modal al abrirlo
+            const modalExportar = document.getElementById('modalExportar');
+            if (modalExportar) {
+                modalExportar.addEventListener('show.bs.modal', function() {
+                    // Usar las mismas fechas del generador de reportes si están disponibles
+                    const fechaInicio = document.getElementById('fechaInicio').value;
+                    const fechaFin = document.getElementById('fechaFin').value;
+
+                    if (fechaInicio) document.getElementById('export_fecha_inicio').value = fechaInicio;
+                    if (fechaFin) document.getElementById('export_fecha_fin').value = fechaFin;
+                });
+            }
         });
+
+        // Función para ver detalles del trabajador
+        function verDetallesTrabajador(idTrabajador) {
+            const modal = new bootstrap.Modal(document.getElementById('modalDetallesTrabajador'));
+            const content = document.getElementById('detallesTrabajadorContent');
+
+            // Mostrar loading
+            content.innerHTML = `
+                <div class="text-center">
+                    <div class="spinner-border text-info" role="status">
+                        <span class="visually-hidden">Cargando...</span>
+                    </div>
+                    <p class="mt-2">Cargando detalles...</p>
+                </div>
+            `;
+
+            modal.show();
+
+            // Realizar petición AJAX
+            fetch(`/administrador/trabajador-detalles/${idTrabajador}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        const trabajador = data.trabajador;
+                        content.innerHTML = `
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="info-card p-3 mb-3 rounded bg-light">
+                                        <h6 class="text-primary mb-3"><i class="bi bi-person-badge me-2"></i>Información Personal</h6>
+                                        <p><strong>Nombre:</strong> ${trabajador.nombre || 'No especificado'}</p>
+                                        <p><strong>Usuario:</strong> ${trabajador.usuario || 'No especificado'}</p>
+                                        <p><strong>Email:</strong> ${trabajador.email || 'No especificado'}</p>
+                                        <p><strong>DNI:</strong> ${trabajador.dni || 'No especificado'}</p>
+                                        <p><strong>Teléfono:</strong> ${trabajador.telefono || 'No especificado'}</p>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="info-card p-3 mb-3 rounded bg-light">
+                                        <h6 class="text-success mb-3"><i class="bi bi-geo-alt me-2"></i>Información Adicional</h6>
+                                        <p><strong>Dirección:</strong> ${trabajador.direccion || 'No especificada'}</p>
+                                        <p><strong>Fecha de Registro:</strong> ${trabajador.fecha_registro ? new Date(trabajador.fecha_registro).toLocaleDateString() : 'No especificada'}</p>
+                                        <p><strong>Rol:</strong> Bibliotecario</p>
+                                        <p><strong>Estado:</strong> <span class="badge bg-success">Activo</span></p>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    } else {
+                        content.innerHTML = `
+                            <div class="alert alert-danger">
+                                <i class="bi bi-exclamation-triangle me-2"></i>
+                                Error al cargar los detalles del trabajador.
+                            </div>
+                        `;
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    content.innerHTML = `
+                        <div class="alert alert-danger">
+                            <i class="bi bi-exclamation-triangle me-2"></i>
+                            Error al cargar los detalles del trabajador.
+                        </div>
+                    `;
+                });
+        }
+
+        // Función para ver detalles del usuario
+        function verDetallesUsuario(idUsuario) {
+            const modal = new bootstrap.Modal(document.getElementById('modalDetallesUsuario'));
+            const content = document.getElementById('detallesUsuarioContent');
+
+            // Mostrar loading
+            content.innerHTML = `
+                <div class="text-center">
+                    <div class="spinner-border text-info" role="status">
+                        <span class="visually-hidden">Cargando...</span>
+                    </div>
+                    <p class="mt-2">Cargando detalles...</p>
+                </div>
+            `;
+
+            modal.show();
+
+            // Realizar petición AJAX
+            fetch(`/administrador/usuario-detalles/${idUsuario}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        const usuario = data.usuario;
+                        content.innerHTML = `
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="info-card p-3 mb-3 rounded bg-light">
+                                        <h6 class="text-primary mb-3"><i class="bi bi-person-lines-fill me-2"></i>Información Personal</h6>
+                                        <p><strong>Nombre:</strong> ${usuario.nombre || 'No especificado'}</p>
+                                        <p><strong>Apellido:</strong> ${usuario.apellido || 'No especificado'}</p>
+                                        <p><strong>Email:</strong> ${usuario.email || 'No especificado'}</p>
+                                        <p><strong>DNI:</strong> ${usuario.dni || 'No especificado'}</p>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="info-card p-3 mb-3 rounded bg-light">
+                                        <h6 class="text-success mb-3"><i class="bi bi-mortarboard me-2"></i>Información Académica</h6>
+                                        <p><strong>Código Estudiante:</strong> ${usuario.codigo_estudiante || 'No especificado'}</p>
+                                        <p><strong>Fecha de Registro:</strong> ${usuario.fecha_registro ? new Date(usuario.fecha_registro).toLocaleDateString() : 'No especificada'}</p>
+                                        <p><strong>Estado:</strong> <span class="badge bg-success">Activo</span></p>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    } else {
+                        content.innerHTML = `
+                            <div class="alert alert-danger">
+                                <i class="bi bi-exclamation-triangle me-2"></i>
+                                Error al cargar los detalles del usuario.
+                            </div>
+                        `;
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    content.innerHTML = `
+                        <div class="alert alert-danger">
+                            <i class="bi bi-exclamation-triangle me-2"></i>
+                            Error al cargar los detalles del usuario.
+                        </div>
+                    `;
+                });
+        }
 
         // Función de búsqueda para las tablas
         function search(tipo) {
@@ -1636,7 +2221,328 @@
                 tr[i].style.display = found ? "" : "none";
             }
         }
+
+        // Función para validar que disponibles no sea mayor que cantidad
+        function validarDisponibles() {
+            const cantidad = parseInt(document.getElementById('edit_cantidad').value) || 0;
+            const disponibles = parseInt(document.getElementById('edit_disponibles').value) || 0;
+            const inputDisponibles = document.getElementById('edit_disponibles');
+
+            if (disponibles > cantidad) {
+                inputDisponibles.value = cantidad;
+                showErrorToast('Los libros disponibles no pueden ser más que la cantidad total');
+            }
+        }
+
+        // Función para abrir modal de editar libro
+        function abrirModalEditarLibro(libroId) {
+            // Buscar el libro en la tabla actual
+            const fila = document.querySelector(`tr[data-libro-id="${libroId}"]`);
+            if (!fila) {
+                // Si no encontramos la fila, hacemos una petición AJAX para obtener los datos
+                fetch(`/admin/libros/${libroId}/edit-data`)
+                    .then(response => response.json())
+                    .then(libro => {
+                        llenarFormularioEdicion(libro);
+                        document.getElementById('formEditarLibro').action = `/admin/libros/${libroId}`;
+                        new bootstrap.Modal(document.getElementById('modalEditarLibro')).show();
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        showErrorToast('Error al cargar los datos del libro');
+                    });
+                return;
+            }
+
+            // Extraer datos de la fila de la tabla
+            const celdas = fila.getElementsByTagName('td');
+            const libro = {
+                id_libro: libroId,
+                codigo: celdas[0].textContent.trim(),
+                titulo: celdas[1].textContent.trim(),
+                autor: celdas[2].textContent.trim(),
+                categoria: celdas[3].textContent.trim(),
+                cantidad: celdas[4].textContent.trim(),
+                disponibles: celdas[5].textContent.trim(),
+                estado: celdas[6].querySelector('.badge').textContent.toLowerCase().trim(),
+                portada: celdas[7].querySelector('img') ? celdas[7].querySelector('img').src : null
+            };
+
+            llenarFormularioEdicion(libro);
+            document.getElementById('formEditarLibro').action = `/admin/libros/${libroId}`;
+            new bootstrap.Modal(document.getElementById('modalEditarLibro')).show();
+        }
+
+        function llenarFormularioEdicion(libro) {
+            document.getElementById('edit_codigo').value = libro.codigo || '';
+            document.getElementById('edit_titulo').value = libro.titulo || '';
+            document.getElementById('edit_autor').value = libro.autor || '';
+            document.getElementById('edit_anio_publicacion').value = libro.anio_publicacion || '';
+            document.getElementById('edit_cantidad').value = libro.cantidad || '';
+            document.getElementById('edit_disponibles').value = libro.disponibles || '';
+            document.getElementById('edit_editorial').value = libro.editorial || '';
+
+            // Seleccionar categoría
+            if (libro.categoria_id) {
+                document.getElementById('edit_categoria_id').value = libro.categoria_id;
+            } else if (libro.categoria) {
+                // Buscar por nombre de categoría
+                const selectCategoria = document.getElementById('edit_categoria_id');
+                for (let option of selectCategoria.options) {
+                    if (option.textContent.trim() === libro.categoria) {
+                        option.selected = true;
+                        break;
+                    }
+                }
+            }
+
+            // Seleccionar estado
+            const estado = libro.estado || 'disponible';
+            document.getElementById('edit_estado').value = estado;
+
+            // Mostrar portada actual si existe
+            if (libro.portada) {
+                document.getElementById('portada_actual').style.display = 'block';
+                document.getElementById('img_portada_actual').src = libro.portada;
+            } else {
+                document.getElementById('portada_actual').style.display = 'none';
+            }
+        }
+
+        // Manejar envío del formulario de edición
+        document.getElementById('formEditarLibro').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const formData = new FormData(this);
+            const actionUrl = this.action;
+
+            fetch(actionUrl, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Cerrar modal
+                    bootstrap.Modal.getInstance(document.getElementById('modalEditarLibro')).hide();
+
+                    // Mostrar mensaje de éxito
+                    showSuccessToast('Libro actualizado correctamente');
+
+                    // Recargar la página para mostrar los cambios
+                    location.reload();
+                } else {
+                    showErrorToast(data.message || 'Error al actualizar el libro');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showErrorToast('Error al actualizar el libro');
+            });
+        });
     </script>
+
+    <!-- Modal para Editar Libro -->
+    <div class="modal fade" id="modalEditarLibro" tabindex="-1" aria-labelledby="modalEditarLibroLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header" style="background: linear-gradient(90deg, #0B5ED7 60%, #0B1C2B 100%); color: #fff;">
+                    <h5 class="modal-title" id="modalEditarLibroLabel">
+                        <i class="bi bi-pencil-square me-2"></i>Editar Libro
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form id="formEditarLibro" method="POST" enctype="multipart/form-data">
+                    @csrf
+                    @method('PUT')
+                    <div class="modal-body">
+                        <div class="edit-form-row mb-3">
+                            <div class="edit-form-col mb-3 mb-md-0">
+                                <label for="edit_codigo" class="form-label">Código</label>
+                                <input type="text" class="form-control" id="edit_codigo" name="codigo" required>
+                            </div>
+                            <div class="edit-form-col">
+                                <label for="edit_titulo" class="form-label">Título</label>
+                                <input type="text" class="form-control" id="edit_titulo" name="titulo" required>
+                            </div>
+                        </div>
+                        <div class="edit-form-row mb-3">
+                            <div class="edit-form-col mb-3 mb-md-0">
+                                <label for="edit_autor" class="form-label">Autor</label>
+                                <input type="text" class="form-control" id="edit_autor" name="autor">
+                            </div>
+                            <div class="edit-form-col">
+                                <label for="edit_editorial" class="form-label">Editorial</label>
+                                <input type="text" class="form-control" id="edit_editorial" name="editorial">
+                            </div>
+                        </div>
+                        <div class="edit-form-row mb-3">
+                            <div class="edit-form-col mb-3 mb-md-0">
+                                <label for="edit_anio_publicacion" class="form-label">Año de publicación</label>
+                                <input type="number" class="form-control" id="edit_anio_publicacion" name="anio_publicacion">
+                            </div>
+                            <div class="edit-form-col">
+                                <label for="edit_categoria_id" class="form-label">Categoría</label>
+                                <select class="form-select" id="edit_categoria_id" name="categoria_id">
+                                    @foreach($categorias as $categoria)
+                                        <option value="{{ $categoria->id_categoria }}">{{ $categoria->nombre }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+                        <div class="edit-form-row mb-3">
+                            <div class="edit-form-col mb-3 mb-md-0">
+                                <label for="edit_cantidad" class="form-label">Cantidad</label>
+                                <input type="number" class="form-control" id="edit_cantidad" name="cantidad" min="1" required onchange="validarDisponibles()">
+                            </div>
+                            <div class="edit-form-col">
+                                <label for="edit_disponibles" class="form-label">Disponibles</label>
+                                <input type="number" class="form-control" id="edit_disponibles" name="disponibles" min="0" required onchange="validarDisponibles()">
+                            </div>
+                        </div>
+                        <div class="edit-form-row mb-3">
+                            <div class="edit-form-col mb-3 mb-md-0">
+                                <label for="edit_estado" class="form-label">Estado</label>
+                                <select class="form-select" id="edit_estado" name="estado" required>
+                                    <option value="disponible">Disponible</option>
+                                    <option value="prestado">Prestado</option>
+                                    <option value="dañado">Dañado</option>
+                                </select>
+                            </div>
+                            <div class="edit-form-col">
+                                <label for="edit_portada" class="form-label">Portada</label>
+                                <div id="portada_actual" class="mb-2 text-center" style="display: none;">
+                                    <img id="img_portada_actual" src="" alt="Portada actual" width="90" class="rounded shadow-sm">
+                                </div>
+                                <input type="file" class="form-control" id="edit_portada" name="portada" accept="image/*">
+                                <small class="text-muted">Dejar vacío para mantener la portada actual</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-save me-2"></i>Actualizar Libro
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para Exportar Reportes -->
+    <div class="modal fade" id="modalExportar" tabindex="-1" aria-labelledby="modalExportarLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title" id="modalExportarLabel">
+                        <i class="bi bi-download me-2"></i>Exportar Reporte
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form id="formExportar">
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="export_tipo" class="form-label">Tipo de Reporte</label>
+                            <select class="form-select" id="export_tipo" name="tipo" required>
+                                <option value="prestamos">Préstamos</option>
+                                <option value="devoluciones">Devoluciones</option>
+                                <option value="usuarios">Usuarios Registrados</option>
+                                <option value="sanciones">Sanciones</option>
+                                <option value="libros">Libros más Solicitados</option>
+                                <option value="inventario">Inventario de Libros</option>
+                            </select>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="export_fecha_inicio" class="form-label">Fecha Inicio</label>
+                                <input type="date" class="form-control" id="export_fecha_inicio" name="fecha_inicio">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="export_fecha_fin" class="form-label">Fecha Fin</label>
+                                <input type="date" class="form-control" id="export_fecha_fin" name="fecha_fin">
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="export_formato" class="form-label">Formato de Exportación</label>
+                            <select class="form-select" id="export_formato" name="formato">
+                                <option value="excel">Excel (.xlsx)</option>
+                                <option value="csv">CSV (.csv)</option>
+                            </select>
+                        </div>
+                        <div class="alert alert-info">
+                            <i class="bi bi-info-circle me-2"></i>
+                            <strong>Nota:</strong> Si no selecciona fechas, se exportarán todos los registros disponibles.
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-download me-2"></i>Exportar
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Detalles Trabajador -->
+    <div class="modal fade" id="modalDetallesTrabajador" tabindex="-1" aria-labelledby="modalDetallesTrabajadorLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header bg-info text-white">
+                    <h5 class="modal-title text-white" id="modalDetallesTrabajadorLabel">
+                        <i class="bi bi-person-badge me-2"></i>Detalles del Trabajador
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="detallesTrabajadorContent">
+                    <div class="text-center">
+                        <div class="spinner-border text-info" role="status">
+                            <span class="visually-hidden">Cargando...</span>
+                        </div>
+                        <p class="mt-2">Cargando detalles...</p>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Detalles Usuario -->
+    <div class="modal fade" id="modalDetallesUsuario" tabindex="-1" aria-labelledby="modalDetallesUsuarioLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header bg-info text-white">
+                    <h5 class="modal-title text-white" id="modalDetallesUsuarioLabel">
+                        <i class="bi bi-person-lines-fill me-2"></i>Detalles del Usuario
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="detallesUsuarioContent">
+                    <div class="text-center">
+                        <div class="spinner-border text-info" role="status">
+                            <span class="visually-hidden">Cargando...</span>
+                        </div>
+                        <p class="mt-2">Cargando detalles...</p>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 9999;">
+        <!-- Los toasts se insertarán aquí dinámicamente -->
+    </div>
 
     <!-- Bootstrap JS para funcionalidad de alertas y modales -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
