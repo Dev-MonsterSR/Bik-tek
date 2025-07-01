@@ -18,7 +18,7 @@
             <div class="col-md-3 mb-4 mb-md-0">
                 <h5>Contacto</h5>
                 <ul class="list-unstyled">
-                    <li><i class="bi bi-geo-alt me-2"></i> Av. Universitaria 123</li>
+                    <li><i class="bi bi-geo-alt me-2"></i> Tecsup Norte / Campus Trujillo el Golf</li>
                     <li><i class="bi bi-telephone me-2"></i> (01) 234-5678</li>
                     <li><i class="bi bi-envelope me-2"></i> biblioteca@tecsup.edu.pe</li>
                 </ul>

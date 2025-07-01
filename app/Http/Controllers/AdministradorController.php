@@ -138,6 +138,7 @@ class AdministradorController extends Controller
                 'sanciones_vencidas' => Sancion::where('estado', 'activa')
                     ->where('fecha_fin', '<', now())
                     ->count(),
+                'libros_bajo_stock' => Libro::where('disponibles', '<=', 2)->count(),
                 // Legacy support
                 'pendientes' => Prestamo::where('estado', 'pendiente')->count(),
                 'aceptados' => Prestamo::where('estado', 'activo')->count(),

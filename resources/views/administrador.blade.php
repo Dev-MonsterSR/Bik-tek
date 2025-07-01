@@ -677,6 +677,37 @@
             transform: scale(1.08) rotate(-2deg);
         }
 
+        /* Estilos para búsqueda mejorada */
+        .search-input-focused {
+            border-color: #0B5ED7 !important;
+            box-shadow: 0 0 0 0.2rem rgba(11, 94, 215, 0.25) !important;
+        }
+
+        .search-highlight {
+            background-color: #fff3cd !important;
+            transition: background-color 0.3s ease;
+        }
+
+        .no-results-row td {
+            font-style: italic;
+            color: #6c757d !important;
+        }
+
+        /* Animación para filas de tabla */
+        .table tbody tr {
+            transition: opacity 0.2s ease, transform 0.2s ease;
+        }
+
+        .table tbody tr[style*="display: none"] {
+            opacity: 0;
+            transform: translateX(-10px);
+        }
+
+        /* Indicador de búsqueda activa */
+        .search-active {
+            border-left: 3px solid #0B5ED7;
+        }
+
         /* Modo oscuro para modal de edición */
         body.dark-mode .img-preview {
             border-color: #555;
@@ -697,6 +728,15 @@
         body.dark-mode .modal-footer {
             background-color: #2d3238 !important;
             border-top-color: #444 !important;
+        }
+
+        /* Estilos para búsqueda en modo oscuro */
+        body.dark-mode .search-highlight {
+            background-color: #495057 !important;
+        }
+
+        body.dark-mode .no-results-row td {
+            color: #adb5bd !important;
         }
 
         /* Estilos para modales de detalles */
@@ -1021,19 +1061,24 @@
                         <div class="col-lg-4 col-md-12">
                             <div class="chart-card h-100">
                                 <div class="card-header bg-white border-0">
-                                    <h6 class="fw-bold mb-1">Alertas</h6>
+                                    <h6 class="fw-bold mb-1">Alertas del Sistema</h6>
+                                    <small class="text-muted">Estado actual</small>
                                 </div>
                                 <div class="card-body">
-                                    <div class="alert alert-warning py-2 mb-2">
+                                    <div id="alertaPrestamosVencidos" class="alert alert-warning py-2 mb-2" style="display: none;">
                                         <i class="bi bi-clock text-warning me-2"></i>
-                                        <span id="prestamosVencidos">3</span> préstamos vencidos
+                                        <span id="prestamosVencidos">0</span> préstamos vencidos
                                     </div>
-                                    <div class="alert alert-danger py-2 mb-2">
+                                    <div id="alertaSancionesVencidas" class="alert alert-danger py-2 mb-2" style="display: none;">
                                         <i class="bi bi-exclamation-triangle text-danger me-2"></i>
-                                        <span id="sancionesVencidas">1</span> sanción por revisar
+                                        <span id="sancionesVencidas">0</span> sanciones por revisar
                                     </div>
-                                    <div class="alert alert-info py-2 mb-0">
-                                        <i class="bi bi-info-circle text-info me-2"></i>
+                                    <div id="alertaLibrosBajos" class="alert alert-info py-2 mb-2" style="display: none;">
+                                        <i class="bi bi-book text-info me-2"></i>
+                                        <span id="librosBajoStock">0</span> libros con bajo stock
+                                    </div>
+                                    <div id="alertaSistemaOK" class="alert alert-success py-2 mb-0">
+                                        <i class="bi bi-check-circle text-success me-2"></i>
                                         Sistema funcionando correctamente
                                     </div>
                                 </div>
@@ -1319,30 +1364,38 @@
                     <div class="row mb-4">
                         <div class="col-md-6 mb-3 mb-md-0">
                             <div class="input-group">
-                                <input type="text" id="searchTrabajadores" class="form-control" placeholder="Buscar bibliotecarios...">
-                                <button class="btn btn-outline-secondary" type="button" onclick="search('trabajadores')">
+                                <input type="text" id="searchTrabajadores" class="form-control" placeholder="Buscar bibliotecarios..." autocomplete="off">
+                                <button class="btn btn-outline-secondary" type="button" onclick="search('trabajadores')" title="Buscar">
                                     <i class="bi bi-search"></i>
                                 </button>
+                                <button class="btn btn-outline-secondary" type="button" onclick="clearSearch('trabajadores')" title="Limpiar búsqueda">
+                                    <i class="bi bi-x-lg"></i>
+                                </button>
                             </div>
+                            <small class="text-muted">Busca por usuario, nombre, email o rol</small>
                         </div>
                         <div class="col-md-6">
                             <div class="input-group">
-                                <input type="text" id="searchUsuarios" class="form-control" placeholder="Buscar usuarios...">
-                                <button class="btn btn-outline-secondary" type="button" onclick="search('usuarios')">
+                                <input type="text" id="searchUsuarios" class="form-control" placeholder="Buscar usuarios..." autocomplete="off">
+                                <button class="btn btn-outline-secondary" type="button" onclick="search('usuarios')" title="Buscar">
                                     <i class="bi bi-search"></i>
                                 </button>
+                                <button class="btn btn-outline-secondary" type="button" onclick="clearSearch('usuarios')" title="Limpiar búsqueda">
+                                    <i class="bi bi-x-lg"></i>
+                                </button>
                             </div>
+                            <small class="text-muted">Busca por nombre, apellido, email o fecha</small>
                         </div>
                     </div>
 
                     <!-- Sección Trabajadores -->
-                    <div class="chart-card mb-4">
+                    <div id="seccionTrabajadores" class="chart-card mb-4">
                         <div class="card-header bg-white border-0 d-flex justify-content-between align-items-center">
                             <h4 class="h6 fw-bold mb-0">Bibliotecarios</h4>
-                            <span class="badge bg-primary">{{ count($trabajadores) }}</span>
+                            <span id="badgeTrabajadores" class="badge bg-primary">{{ count($trabajadores) }}</span>
                         </div>
                         <div class="table-responsive">
-                            <table class="table table-bordered align-middle mb-0">
+                            <table id="tablaTrabajadores" class="table table-bordered align-middle mb-0">
                                 <thead class="table-light">
                                     <tr>
                                         <th>Usuario</th>
@@ -1386,13 +1439,13 @@
                     </div>
 
                     <!-- Sección Usuarios -->
-                    <div class="chart-card mb-4">
+                    <div id="seccionUsuarios" class="chart-card mb-4">
                         <div class="card-header bg-white border-0 d-flex justify-content-between align-items-center">
                             <h4 class="h6 fw-bold mb-0">Usuarios</h4>
-                            <span class="badge bg-success">{{ count($usuarios) }}</span>
+                            <span id="badgeUsuarios" class="badge bg-success">{{ count($usuarios) }}</span>
                         </div>
                         <div class="table-responsive">
-                            <table class="table table-bordered align-middle mb-0">
+                            <table id="tablaUsuarios" class="table table-bordered align-middle mb-0">
                                 <thead class="table-light">
                                     <tr>
                                         <th>Nombre</th>
@@ -1982,6 +2035,12 @@
             } else if (tab === 'sanciones') {
                 cargarMetricasSanciones();
                 cargarTablaSanciones();
+            } else if (tab === 'cuentas') {
+                // Verificar y configurar búsqueda cuando se muestre la pestaña de cuentas
+                setTimeout(() => {
+                    verificarElementosBusqueda();
+                    setupRealTimeSearch();
+                }, 100);
             }
         }
 
@@ -2020,17 +2079,124 @@
         }
 
         function cargarMetricas() {
+            console.log('Cargando métricas...');
             fetch("{{ route('admin.reportes.grafico') }}?tipo=metricas")
                 .then(res => res.json())
                 .then(data => {
+                    console.log('Métricas recibidas:', data);
+
+                    // Actualizar métricas principales
                     document.getElementById('prestamosTotales').textContent = data.prestamos || 0;
                     document.getElementById('usuariosActivos').textContent = data.usuarios_totales || 0;
                     document.getElementById('devolucionesTotales').textContent = data.devoluciones || 0;
                     document.getElementById('sancionesActivas').textContent = data.sanciones_activas || 0;
-                    document.getElementById('prestamosVencidos').textContent = data.prestamos_vencidos || 0;
-                    document.getElementById('sancionesVencidas').textContent = data.sanciones_vencidas || 0;
+
+                    // Actualizar alertas dinámicamente
+                    actualizarAlertas(data);
                 })
-                .catch(error => console.error('Error:', error));
+                .catch(error => {
+                    console.error('Error cargando métricas:', error);
+                    // Mostrar alerta de error en el sistema
+                    mostrarAlertaError();
+                });
+        }
+
+        function actualizarAlertas(data) {
+            console.log('Datos recibidos para alertas:', data);
+
+            const prestamosVencidos = data.prestamos_vencidos || 0;
+            const sancionesVencidas = data.sanciones_vencidas || 0;
+            const librosBajos = data.libros_bajo_stock || 0;
+
+            console.log('Valores de alertas:', {
+                prestamosVencidos,
+                sancionesVencidas,
+                librosBajos
+            });
+
+            // Alertas elementos
+            const alertaPrestamos = document.getElementById('alertaPrestamosVencidos');
+            const alertaSanciones = document.getElementById('alertaSancionesVencidas');
+            const alertaLibros = document.getElementById('alertaLibrosBajos');
+            const alertaSistemaOK = document.getElementById('alertaSistemaOK');
+
+            // Verificar que los elementos existen
+            if (!alertaPrestamos || !alertaSanciones || !alertaLibros || !alertaSistemaOK) {
+                console.error('Error: No se encontraron todos los elementos de alertas');
+                return;
+            }
+
+            // Actualizar valores
+            const elemPrestamos = document.getElementById('prestamosVencidos');
+            const elemSanciones = document.getElementById('sancionesVencidas');
+            const elemLibros = document.getElementById('librosBajoStock');
+
+            if (elemPrestamos) elemPrestamos.textContent = prestamosVencidos;
+            if (elemSanciones) elemSanciones.textContent = sancionesVencidas;
+            if (elemLibros) elemLibros.textContent = librosBajos;
+
+            let hayAlertas = false;
+
+            // Mostrar/ocultar alerta de préstamos vencidos
+            if (prestamosVencidos > 0) {
+                alertaPrestamos.style.display = 'block';
+                hayAlertas = true;
+                console.log('Mostrando alerta de préstamos vencidos:', prestamosVencidos);
+            } else {
+                alertaPrestamos.style.display = 'none';
+                console.log('Ocultando alerta de préstamos vencidos');
+            }
+
+            // Mostrar/ocultar alerta de sanciones vencidas
+            if (sancionesVencidas > 0) {
+                alertaSanciones.style.display = 'block';
+                hayAlertas = true;
+                console.log('Mostrando alerta de sanciones vencidas:', sancionesVencidas);
+            } else {
+                alertaSanciones.style.display = 'none';
+                console.log('Ocultando alerta de sanciones vencidas');
+            }
+
+            // Mostrar/ocultar alerta de libros con bajo stock
+            if (librosBajos > 0) {
+                alertaLibros.style.display = 'block';
+                hayAlertas = true;
+                console.log('Mostrando alerta de libros bajo stock:', librosBajos);
+            } else {
+                alertaLibros.style.display = 'none';
+                console.log('Ocultando alerta de libros bajo stock');
+            }
+
+            // Mostrar mensaje de sistema OK solo si no hay alertas
+            if (!hayAlertas) {
+                alertaSistemaOK.style.display = 'block';
+                alertaSistemaOK.className = 'alert alert-success py-2 mb-0';
+                alertaSistemaOK.innerHTML = `
+                    <i class="bi bi-check-circle text-success me-2"></i>
+                    Sistema funcionando correctamente
+                `;
+                console.log('Sistema funcionando correctamente - sin alertas');
+            } else {
+                alertaSistemaOK.style.display = 'block';
+                alertaSistemaOK.className = 'alert alert-warning py-2 mb-0';
+                alertaSistemaOK.innerHTML = `
+                    <i class="bi bi-exclamation-triangle text-warning me-2"></i>
+                    Se encontraron ${prestamosVencidos + sancionesVencidas + librosBajos} alertas que requieren atención
+                `;
+                console.log('Alertas encontradas:', prestamosVencidos + sancionesVencidas + librosBajos);
+            }
+        }
+
+        function mostrarAlertaError() {
+            const alertaSistemaOK = document.getElementById('alertaSistemaOK');
+            if (alertaSistemaOK) {
+                alertaSistemaOK.style.display = 'block';
+                alertaSistemaOK.className = 'alert alert-danger py-2 mb-0';
+                alertaSistemaOK.innerHTML = `
+                    <i class="bi bi-exclamation-triangle text-danger me-2"></i>
+                    Error al cargar datos del sistema
+                `;
+            }
         }
 
         function actualizarGrafico() {
@@ -2431,9 +2597,12 @@
             // Cargar datos iniciales
             cargarDatos();
 
+            // Configurar búsqueda en tiempo real
+            setupRealTimeSearch();
+
             // Mostrar toast de bienvenida (después de un pequeño delay para que se cargue la página)
             setTimeout(() => {
-                showInfoToast('¡Bienvenido al Dashboard! Ahora las notificaciones no bloquearán la interfaz.', 3000);
+                showInfoToast('¡Sistema de búsqueda optimizado! Usa Esc para limpiar búsquedas.', 3000);
             }, 1000);
 
             // Agregar listeners globales para todos los modales
@@ -2810,30 +2979,76 @@
                 });
         }
 
-        // Función de búsqueda para las tablas
+        // Función para mostrar mensaje cuando no hay resultados
+        function showNoResultsMessage(tipo, table, show) {
+            const tableBody = table.querySelector('tbody');
+            let noResultsRow = table.querySelector('.no-results-row');
+
+            if (show && !noResultsRow) {
+                // Crear fila de "sin resultados"
+                const colCount = table.querySelector('thead tr').children.length;
+                noResultsRow = document.createElement('tr');
+                noResultsRow.className = 'no-results-row';
+                noResultsRow.innerHTML = `
+                    <td colspan="${colCount}" class="text-center text-muted py-4">
+                        <i class="bi bi-search me-2"></i>
+                        No se encontraron resultados para la búsqueda
+                    </td>
+                `;
+                tableBody.appendChild(noResultsRow);
+            } else if (!show && noResultsRow) {
+                // Remover fila de "sin resultados"
+                noResultsRow.remove();
+            }
+        }
+
+        // Función de búsqueda para las tablas mejorada
         function search(tipo) {
             let input, filter, table, tr, td, i, txtValue;
+
             if (tipo === 'trabajadores') {
                 input = document.getElementById("searchTrabajadores");
-                // Busca el h4 con texto "Trabajadores"
-                let h4 = Array.from(document.querySelectorAll('#panel-cuentas h4')).find(h => h.textContent.trim().toLowerCase() === 'trabajadores');
-                if (!h4) return;
-                table = h4.nextElementSibling.querySelector('table');
+                table = document.getElementById("tablaTrabajadores");
             } else if (tipo === 'usuarios') {
                 input = document.getElementById("searchUsuarios");
-                // Busca el h4 con texto "Usuarios"
-                let h4 = Array.from(document.querySelectorAll('#panel-cuentas h4')).find(h => h.textContent.trim().toLowerCase() === 'usuarios');
-                if (!h4) return;
-                table = h4.nextElementSibling.querySelector('table');
+                table = document.getElementById("tablaUsuarios");
             } else {
+                console.error(`Tipo de búsqueda no válido: ${tipo}`);
                 return;
             }
-            filter = input.value.toLowerCase();
+
+            if (!input || !table) {
+                console.error(`No se encontró input o tabla para ${tipo}`);
+                console.log(`Input encontrado: ${!!input}, Tabla encontrada: ${!!table}`);
+                return;
+            }
+
+            filter = input.value.toLowerCase().trim();
             tr = table.getElementsByTagName("tr");
+            let visibleCount = 0;
+            let totalCount = tr.length - 1; // -1 para excluir el header
+
+            console.log(`Buscando en ${tipo}: "${filter}", filas totales: ${totalCount}`);
+
+            // Remover mensaje de "sin resultados" si existe
+            showNoResultsMessage(tipo, table, false);
+
+            // Si no hay filtro, mostrar todas las filas
+            if (filter === '') {
+                for (i = 1; i < tr.length; i++) {
+                    tr[i].style.display = "";
+                    visibleCount++;
+                }
+                updateSearchCounter(tipo, visibleCount, totalCount, false);
+                return;
+            }
+
+            // Aplicar filtro
             for (i = 1; i < tr.length; i++) { // Empieza en 1 para saltar el thead
                 let found = false;
                 let tds = tr[i].getElementsByTagName("td");
-                for (let j = 0; j < tds.length; j++) {
+
+                for (let j = 0; j < tds.length - 1; j++) { // -1 para excluir la columna de acciones
                     td = tds[j];
                     if (td) {
                         txtValue = td.textContent || td.innerText;
@@ -2843,7 +3058,172 @@
                         }
                     }
                 }
-                tr[i].style.display = found ? "" : "none";
+
+                if (found) {
+                    tr[i].style.display = "";
+                    visibleCount++;
+                } else {
+                    tr[i].style.display = "none";
+                }
+            }
+
+            console.log(`Resultados encontrados: ${visibleCount} de ${totalCount}`);
+
+            // Mostrar mensaje si no hay resultados
+            if (visibleCount === 0 && filter !== '') {
+                showNoResultsMessage(tipo, table, true);
+            }
+
+            updateSearchCounter(tipo, visibleCount, totalCount, true);
+        }
+
+        // Función para actualizar contador de resultados
+        function updateSearchCounter(tipo, visible, total, isFiltered) {
+            let badge;
+
+            if (tipo === 'trabajadores') {
+                badge = document.getElementById('badgeTrabajadores');
+            } else if (tipo === 'usuarios') {
+                badge = document.getElementById('badgeUsuarios');
+            }
+
+            if (badge) {
+                if (isFiltered) {
+                    badge.textContent = `${visible} de ${total}`;
+                    badge.className = visible > 0 ? 'badge bg-success' : 'badge bg-warning';
+                } else {
+                    badge.textContent = total;
+                    badge.className = tipo === 'trabajadores' ? 'badge bg-primary' : 'badge bg-success';
+                }
+            }
+        }
+
+        // Función para limpiar búsqueda
+        function clearSearch(tipo) {
+            const input = document.getElementById(`search${tipo.charAt(0).toUpperCase() + tipo.slice(1)}`);
+            if (input) {
+                input.value = '';
+                search(tipo); // Esto mostrará todas las filas nuevamente
+
+                // Remover estado visual de búsqueda activa
+                let card;
+                if (tipo === 'trabajadores') {
+                    card = document.getElementById('seccionTrabajadores');
+                } else if (tipo === 'usuarios') {
+                    card = document.getElementById('seccionUsuarios');
+                }
+
+                if (card) {
+                    card.classList.remove('search-active');
+                }
+
+                input.focus();
+                showInfoToast(`Búsqueda de ${tipo} limpiada`, 2000);
+            }
+        }
+
+        // Función para verificar que todos los elementos de búsqueda estén presentes
+        function verificarElementosBusqueda() {
+            console.log('=== Verificación de elementos de búsqueda ===');
+
+            const elementos = {
+                'Input Trabajadores': document.getElementById('searchTrabajadores'),
+                'Input Usuarios': document.getElementById('searchUsuarios'),
+                'Tabla Trabajadores': document.getElementById('tablaTrabajadores'),
+                'Tabla Usuarios': document.getElementById('tablaUsuarios'),
+                'Badge Trabajadores': document.getElementById('badgeTrabajadores'),
+                'Badge Usuarios': document.getElementById('badgeUsuarios'),
+                'Sección Trabajadores': document.getElementById('seccionTrabajadores'),
+                'Sección Usuarios': document.getElementById('seccionUsuarios')
+            };
+
+            let todosPresentes = true;
+
+            for (const [nombre, elemento] of Object.entries(elementos)) {
+                const presente = !!elemento;
+                console.log(`${nombre}: ${presente ? '✓' : '✗'}`);
+                if (!presente) {
+                    todosPresentes = false;
+                }
+            }
+
+            if (todosPresentes) {
+                console.log('✓ Todos los elementos están presentes');
+                showInfoToast('Sistema de búsqueda configurado correctamente', 2000);
+            } else {
+                console.log('✗ Faltan algunos elementos');
+                showErrorToast('Error en la configuración de búsqueda', 3000);
+            }
+
+            console.log('=== Fin de verificación ===');
+        }
+
+        // Función para búsqueda en tiempo real
+        function setupRealTimeSearch() {
+            const searchTrabajadores = document.getElementById("searchTrabajadores");
+            const searchUsuarios = document.getElementById("searchUsuarios");
+
+            console.log('Configurando búsqueda en tiempo real...');
+            console.log('Input trabajadores encontrado:', !!searchTrabajadores);
+            console.log('Input usuarios encontrado:', !!searchUsuarios);
+            console.log('Tabla trabajadores encontrada:', !!document.getElementById('tablaTrabajadores'));
+            console.log('Tabla usuarios encontrada:', !!document.getElementById('tablaUsuarios'));
+
+            if (searchTrabajadores) {
+                searchTrabajadores.addEventListener('input', function() {
+                    console.log('Búsqueda trabajadores activada:', this.value);
+                    search('trabajadores');
+                    toggleSearchVisualState(this);
+                });
+                searchTrabajadores.addEventListener('keyup', function(e) {
+                    if (e.key === 'Escape') {
+                        clearSearch('trabajadores');
+                    }
+                });
+                searchTrabajadores.addEventListener('focus', function() {
+                    this.classList.add('search-input-focused');
+                });
+                searchTrabajadores.addEventListener('blur', function() {
+                    this.classList.remove('search-input-focused');
+                });
+            }
+
+            if (searchUsuarios) {
+                searchUsuarios.addEventListener('input', function() {
+                    console.log('Búsqueda usuarios activada:', this.value);
+                    search('usuarios');
+                    toggleSearchVisualState(this);
+                });
+                searchUsuarios.addEventListener('keyup', function(e) {
+                    if (e.key === 'Escape') {
+                        clearSearch('usuarios');
+                    }
+                });
+                searchUsuarios.addEventListener('focus', function() {
+                    this.classList.add('search-input-focused');
+                });
+                searchUsuarios.addEventListener('blur', function() {
+                    this.classList.remove('search-input-focused');
+                });
+            }
+        }
+
+        // Función para manejar el estado visual de la búsqueda
+        function toggleSearchVisualState(input) {
+            let card;
+
+            if (input.id === 'searchTrabajadores') {
+                card = document.getElementById('seccionTrabajadores');
+            } else if (input.id === 'searchUsuarios') {
+                card = document.getElementById('seccionUsuarios');
+            }
+
+            if (card) {
+                if (input.value.trim() !== '') {
+                    card.classList.add('search-active');
+                } else {
+                    card.classList.remove('search-active');
+                }
             }
         }
 
