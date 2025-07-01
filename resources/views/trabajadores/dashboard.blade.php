@@ -20,6 +20,21 @@
             background: #0B1C2B;
             color: #fff;
         }
+
+        /* Comportamiento sticky para desktop */
+        @media (min-width: 768px) {
+            .sidebar {
+                position: sticky;
+                top: 0;
+                height: 100vh;
+                overflow-y: auto;
+            }
+
+            /* Asegurar que el layout funcione correctamente */
+            .container-fluid .row {
+                align-items: flex-start;
+            }
+        }
         .sidebar .nav-link {
             color: #fff;
             font-weight: 500;
@@ -46,27 +61,90 @@
         .content {
             padding: 2rem 1rem;
         }
-        .table thead { background: #0B1C2B; color: #fff; }
-        .modal-header { background: #0B5ED7; color: #fff; }
-        @media (max-width: 991.98px) {
-            .sidebar {
-                min-height: auto;
-                padding-bottom: 1rem;
-            }
+
+        /* Estilos responsive para el layout */
+        @media (max-width: 767.98px) {
             .content {
-                padding: 1rem 0.5rem;
+                padding: 1rem 0.75rem;
+                margin-left: 0 !important;
             }
         }
-        @media (max-width: 767.98px) {
+
+        @media (min-width: 768px) {
+            .container-fluid .row {
+                align-items: flex-start;
+            }
+
+            .content {
+                padding: 2rem 1rem;
+            }
+        }
+        .table thead { background: #0B1C2B; color: #fff; }
+        .modal-header { background: #0B5ED7; color: #fff; }
+        /* Desktop: sidebar sticky */
+        @media (min-width: 768px) {
             .sidebar {
-                position: static;
-                width: 100%;
-                min-height: auto;
+                position: sticky;
+                top: 0;
+                height: 100vh;
+                overflow-y: auto;
+            }
+        }
+
+        @media (max-width: 767.98px) {
+            /* Sidebar móvil: fijo y oculto por defecto */
+            .sidebar {
+                position: fixed !important;
+                top: 0;
+                left: -100%;
+                width: 280px;
+                height: 100vh;
+                z-index: 1050;
                 padding: 0.5rem 0;
+                transition: left 0.3s ease;
+                overflow-y: auto;
+                box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+            }
+            .sidebar.show {
+                left: 0;
             }
             .sidebar .nav-link {
                 font-size: 1rem;
                 padding: 0.75rem 1rem;
+            }
+            .sidebar-overlay {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100vh;
+                background: rgba(0,0,0,0.5);
+                z-index: 1040;
+                display: none;
+            }
+            .sidebar-overlay.show {
+                display: block;
+            }
+            .mobile-header {
+                position: sticky;
+                top: 0;
+                left: 0;
+                right: 0;
+                background: #0B1C2B;
+                color: white;
+                padding: 1rem;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                z-index: 1030;
+                box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            }
+            .mobile-menu-btn {
+                background: none;
+                border: none;
+                color: white;
+                font-size: 1.5rem;
+                cursor: pointer;
             }
         }
 
@@ -284,11 +362,62 @@
             .section-title {
                 flex-direction: column;
                 text-align: center;
+                padding: 0.75rem 0.5rem;
+                margin-bottom: 1rem;
             }
 
             .section-title i {
                 margin-right: 0;
                 margin-bottom: 0.5rem;
+                font-size: 1.25rem;
+            }
+
+            .section-title h2 {
+                font-size: 1.25rem;
+            }
+
+            /* Stats cards más pequeñas en móvil y en 2 columnas */
+            .stats-card {
+                padding: 0.75rem;
+                margin-bottom: 0.5rem;
+            }
+
+            .stats-card h4 {
+                font-size: 1.1rem;
+                margin-bottom: 0.25rem;
+            }
+
+            .stats-card p {
+                font-size: 0.7rem;
+                margin-bottom: 0;
+            }
+
+            .stats-icon {
+                width: 28px;
+                height: 28px;
+                font-size: 0.9rem;
+                margin-bottom: 0.25rem;
+            }
+
+            /* Hacer que las estadísticas se muestren en 2 columnas en móvil */
+            .row.mb-4 .col-md-3 {
+                flex: 0 0 50%;
+                max-width: 50%;
+                padding-left: 0.25rem;
+                padding-right: 0.25rem;
+            }
+
+            /* Reducir espaciado entre filas en móvil */
+            .row.mb-4 {
+                margin-bottom: 1rem !important;
+                margin-left: -0.25rem;
+                margin-right: -0.25rem;
+            }
+
+            /* Hacer la búsqueda más compacta */
+            .search-box {
+                padding: 1rem;
+                margin-bottom: 0.75rem;
             }
         }
 
@@ -300,6 +429,11 @@
 
         .dark-theme .sidebar {
             background: #0a0a0a !important;
+        }
+
+        .dark-theme .mobile-header {
+            background: #0a0a0a !important;
+            color: #e0e0e0 !important;
         }
 
         .dark-theme .stats-card {
@@ -836,6 +970,38 @@
             .stat-item {
                 text-align: left;
             }
+
+            /* Hacer las columnas de estadísticas más pequeñas en móvil */
+            .col-md-3 {
+                margin-bottom: 0.5rem;
+            }
+
+            /* Hacer acordeones más compactos en móvil */
+            .accordion-item {
+                margin-bottom: 0.75rem;
+            }
+
+            .accordion-body {
+                padding: 0.75rem;
+            }
+
+            /* Tablas más compactas en móvil */
+            .table-sm td,
+            .table-sm th {
+                padding: 0.5rem 0.25rem;
+                font-size: 0.8rem;
+            }
+
+            /* Botones más pequeños en móvil */
+            .btn-sm {
+                padding: 0.2rem 0.4rem;
+                font-size: 0.75rem;
+            }
+
+            .action-btn {
+                padding: 0.2rem 0.4rem;
+                font-size: 0.7rem;
+            }
         }
 
         .book-grid {
@@ -1260,10 +1426,24 @@
     </style>
 </head>
 <body>
+    <!-- Header móvil -->
+    <div class="mobile-header d-md-none">
+        <div class="d-flex align-items-center">
+            <img src="{{ asset('img/LocalB/logo.jpg') }}" alt="Logo" style="width: 32px; height: 32px; border-radius: 50%; margin-right: 10px;">
+            <span class="fw-bold">Panel Bibliotecario</span>
+        </div>
+        <button class="mobile-menu-btn" onclick="toggleSidebar()">
+            <i class="bi bi-list"></i>
+        </button>
+    </div>
+
+    <!-- Overlay para cerrar sidebar en móvil -->
+    <div class="sidebar-overlay" onclick="closeSidebar()"></div>
+
     <div class="container-fluid">
         <div class="row flex-nowrap">
             <!-- Sidebar -->
-            <nav class="col-12 col-md-3 col-lg-2 sidebar d-flex flex-column p-0">
+            <nav id="sidebar" class="col-12 col-md-3 col-lg-2 sidebar d-flex flex-column p-0">
                 <div class="sidebar-header">
                     <img src="{{ asset('img/LocalB/logo.jpg') }}" alt="Logo Biblioteca">
                     <h5 class="fw-bold mb-0">Bibliotecario</h5>
@@ -3339,6 +3519,35 @@
                 document.body.classList.add('dark-theme');
             }
             updateThemeButton(savedTheme);
+        });
+
+        // Funciones para el sidebar móvil
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.querySelector('.sidebar-overlay');
+
+            sidebar.classList.toggle('show');
+            overlay.classList.toggle('show');
+        }
+
+        function closeSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.querySelector('.sidebar-overlay');
+
+            sidebar.classList.remove('show');
+            overlay.classList.remove('show');
+        }
+
+        // Cerrar sidebar al hacer clic en enlaces de navegación en móvil
+        document.addEventListener('DOMContentLoaded', function() {
+            const navLinks = document.querySelectorAll('.sidebar .nav-link');
+            navLinks.forEach(link => {
+                link.addEventListener('click', function() {
+                    if (window.innerWidth <= 767) {
+                        closeSidebar();
+                    }
+                });
+            });
         });
     </script>
 </body>

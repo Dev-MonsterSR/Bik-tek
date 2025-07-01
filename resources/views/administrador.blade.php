@@ -12,90 +12,410 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <style>
-        body { background-color: #f8f9fa; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-
-        /* Sidebar mejorado */
-        .sidebar {
-            min-height: 100vh;
-            background: linear-gradient(135deg, #0B1C2B 0%, #1a2332 100%);
-            color: #fff;
-            box-shadow: 2px 0 15px rgba(0,0,0,0.1);
+        :root {
+            --primary-gradient: linear-gradient(135deg, #0B1C2B 0%, #1a2332 100%);
+            --accent-gradient: linear-gradient(90deg, #0B5ED7 0%, #198754 100%);
+            --bg-light: #f8f9fa;
+            --text-muted: #6c757d;
+            --border-radius: 12px;
+            --shadow-light: 0 2px 8px rgba(0,0,0,0.08);
+            --shadow-medium: 0 4px 20px rgba(0,0,0,0.12);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--bg-light);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+        }
+
+        /* ===== MOBILE-FIRST RESPONSIVE DESIGN ===== */
+
+        /* Mobile Header */
+        .mobile-header {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background: var(--primary-gradient);
+            color: white;
+            z-index: 1100;
+            padding: 0 16px;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: var(--shadow-medium);
+        }
+
+        .mobile-header h5 {
+            margin: 0;
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .mobile-menu-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            padding: 8px;
+            border-radius: 8px;
+            transition: var(--transition);
+        }
+
+        .mobile-menu-btn:hover {
+            background: rgba(255,255,255,0.1);
+        }
+
+        /* Sidebar Responsive */
+        .sidebar {
+            min-height: 100vh;
+            background: var(--primary-gradient);
+            color: #fff;
+            box-shadow: var(--shadow-medium);
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 280px;
+            z-index: 1050;
+            overflow-y: auto;
+            transition: var(--transition);
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: 280px;
+            min-height: 100vh;
+            transition: var(--transition);
+            padding-bottom: 80px; /* Space for mobile bottom nav */
+        }
+
+        /* Desktop spacing - ensure content doesn't stick to sidebar */
+        @media (min-width: 769px) {
+            .main-content {
+                padding-left: 32px !important;
+                padding-right: 24px !important;
+            }
+
+            /* Additional selector to override Bootstrap classes */
+            main.main-content.col-md-10 {
+                padding-left: 60px !important;
+                padding-right: 40px !important;
+            }
+
+            /* Force spacing for any main content element */
+            main[class*="main-content"] {
+                padding-left: 32px !important;
+                padding-right: 24px !important;
+            }
+        }
+
+        /* Alternative approach - override Bootstrap's px-md-4 specifically */
+        @media (min-width: 768px) {
+            .main-content.px-md-4 {
+                padding-left: 32px !important;
+                padding-right: 24px !important;
+            }
+        }
+
+        /* Mobile Bottom Navigation */
+        .mobile-bottom-nav {
+            display: none;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 70px;
+            background: white;
+            border-top: 1px solid #e9ecef;
+            z-index: 1000;
+            padding: 8px 0;
+            box-shadow: 0 -2px 12px rgba(0,0,0,0.1);
+        }
+
+        .bottom-nav-item {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            color: var(--text-muted);
+            font-size: 0.75rem;
+            padding: 4px;
+            border-radius: 8px;
+            transition: var(--transition);
+        }
+
+        .bottom-nav-item.active {
+            color: #0B5ED7;
+            background: rgba(11, 94, 215, 0.1);
+        }
+
+        .bottom-nav-item i {
+            font-size: 1.2rem;
+            margin-bottom: 2px;
+        }
+
+        /* Mobile Responsive Breakpoints */
+        @media (max-width: 768px) {
+            .mobile-header {
+                display: flex;
+            }
+
+            .sidebar {
+                transform: translateX(-100%);
+                width: 280px;
+            }
+
+            .sidebar.show {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                margin-left: 0;
+                padding-top: 60px;
+                padding-left: 16px;
+                padding-right: 16px;
+            }
+
+            .mobile-bottom-nav {
+                display: flex;
+            }
+
+            .d-md-block {
+                display: none !important;
+            }
+
+            .desktop-header {
+                display: none !important;
+            }
+        }
+
+        /* Sidebar Overlay for mobile */
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1040;
+            opacity: 0;
+            transition: var(--transition);
+        }
+
+        .sidebar-overlay.show {
+            display: block;
+            opacity: 1;
+        }
+
+        /* Sidebar Navigation Styles */
         .sidebar .nav-link {
             color: #e9ecef;
             font-weight: 500;
-            transition: all 0.3s ease;
+            transition: var(--transition);
             border-radius: 8px;
-            margin: 2px 8px;
+            margin: 4px 12px;
             padding: 12px 16px;
             position: relative;
             overflow: hidden;
+            display: flex;
+            align-items: center;
         }
 
         .sidebar .nav-link:hover, .sidebar .nav-link.active {
-            background: linear-gradient(90deg, #0B5ED7 0%, #198754 100%);
+            background: var(--accent-gradient);
             color: #fff;
-            transform: translateX(8px);
+            transform: translateX(4px);
             box-shadow: 0 4px 15px rgba(11, 94, 215, 0.3);
         }
 
         .sidebar .nav-link i {
-            margin-right: 10px;
+            margin-right: 12px;
             width: 20px;
             text-align: center;
+            font-size: 1.1rem;
         }
 
-        /* Cards de métricas profesionales */
+        /* Cards Responsive */
         .metric-card {
-            border-radius: 16px;
-            transition: all 0.3s ease;
+            border-radius: var(--border-radius);
+            transition: var(--transition);
             overflow: hidden;
             position: relative;
             border: 0;
             background: #fff;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            box-shadow: var(--shadow-light);
+            height: 100%;
         }
 
         .metric-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-medium);
         }
 
         .metric-card .card-body {
-            padding: 2rem;
+            padding: 1.5rem;
+            position: relative;
         }
 
         .metric-icon {
             position: absolute;
-            top: -15px;
-            right: -15px;
-            width: 100px;
-            height: 100px;
+            top: -10px;
+            right: -10px;
+            width: 80px;
+            height: 80px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             opacity: 0.15;
-            font-size: 3rem;
+            font-size: 2.5rem;
         }
 
-        /* Gráficos compactos */
+        /* Mobile Responsive Cards */
+        @media (max-width: 768px) {
+            .metric-card .card-body {
+                padding: 1rem;
+                text-align: center;
+            }
+
+            .metric-card h3 {
+                font-size: 1.5rem !important;
+            }
+
+            .metric-icon {
+                display: none;
+            }
+        }
+
+        /* Tables Responsive */
+        .table-responsive {
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-light);
+        }
+
+        .table {
+            margin-bottom: 0;
+        }
+
+        @media (max-width: 768px) {
+            .table-responsive {
+                font-size: 0.875rem;
+            }
+
+            .table th,
+            .table td {
+                padding: 0.5rem 0.25rem;
+                vertical-align: middle;
+            }
+
+            .btn-sm {
+                padding: 0.25rem 0.5rem;
+                font-size: 0.75rem;
+            }
+        }
+
+        /* Chart Cards */
         .chart-card {
-            border-radius: 12px;
+            border-radius: var(--border-radius);
             border: 0;
-            box-shadow: 0 2px 15px rgba(0,0,0,0.08);
-            transition: all 0.3s ease;
+            box-shadow: var(--shadow-light);
+            transition: var(--transition);
         }
 
         .chart-card:hover {
-            box-shadow: 0 5px 25px rgba(0,0,0,0.12);
+            box-shadow: var(--shadow-medium);
         }
 
-        /* Modo oscuro mejorado */
+        /* Forms Responsive */
+        @media (max-width: 768px) {
+            .row.g-3 > .col-md-3,
+            .row.g-3 > .col-md-4,
+            .row.g-3 > .col-md-6 {
+                margin-bottom: 0.75rem;
+            }
+
+            .edit-form-row {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .modal-dialog {
+                margin: 0.5rem;
+                max-width: calc(100% - 1rem);
+            }
+
+            .modal-body {
+                padding: 1rem;
+            }
+        }
+
+        /* Buttons Mobile Friendly */
+        @media (max-width: 768px) {
+            .btn {
+                padding: 0.5rem 1rem;
+                font-size: 0.9rem;
+            }
+
+            .btn-sm {
+                padding: 0.375rem 0.75rem;
+                font-size: 0.8rem;
+            }
+
+            .d-flex.gap-2 {
+                flex-wrap: wrap;
+                gap: 0.5rem !important;
+            }
+        }
+
+        /* Toast Notifications */
+        .toast-container {
+            position: fixed;
+            top: 80px;
+            right: 20px;
+            z-index: 1200;
+        }
+
+        @media (max-width: 768px) {
+            .toast-container {
+                top: 70px;
+                right: 10px;
+                left: 10px;
+            }
+        }
+
+        /* Dark Mode Enhancements */
         body.dark-mode {
             background: #1a1d23 !important;
             color: #f1f1f1 !important;
+        }
+
+        body.dark-mode .mobile-header {
+            background: linear-gradient(135deg, #0B1C2B 0%, #1a2332 100%);
+        }
+
+        body.dark-mode .mobile-bottom-nav {
+            background: #2d3238 !important;
+            border-top-color: #444 !important;
+        }
+
+        body.dark-mode .bottom-nav-item {
+            color: #adb5bd !important;
+        }
+
+        body.dark-mode .bottom-nav-item.active {
+            color: #0B5ED7 !important;
+            background: rgba(11, 94, 215, 0.2) !important;
         }
 
         body.dark-mode .metric-card,
@@ -104,26 +424,6 @@
             background: #2d3238 !important;
             color: #f1f1f1 !important;
             border-color: #444 !important;
-        }
-
-        body.dark-mode .bg-light {
-            background-color: #3a4148 !important;
-            color: #fff !important;
-        }
-
-        body.dark-mode .bg-white {
-            background-color: #2d3238 !important;
-            color: #f1f1f1 !important;
-        }
-
-        body.dark-mode .text-muted {
-            color: #adb5bd !important;
-        }
-
-        body.dark-mode .card-header {
-            background-color: #3a4148 !important;
-            color: #f1f1f1 !important;
-            border-bottom-color: #444 !important;
         }
 
         body.dark-mode .table {
@@ -135,32 +435,6 @@
             color: #f1f1f1 !important;
         }
 
-        body.dark-mode .border-bottom {
-            border-bottom-color: #444 !important;
-        }
-
-        body.dark-mode .progress {
-            background-color: #3a4148 !important;
-        }
-
-        body.dark-mode .alert-warning {
-            background-color: #664d03 !important;
-            color: #fff3cd !important;
-            border-color: #b08d47 !important;
-        }
-
-        body.dark-mode .alert-danger {
-            background-color: #721c24 !important;
-            color: #f8d7da !important;
-            border-color: #a52834 !important;
-        }
-
-        body.dark-mode .alert-info {
-            background-color: #055160 !important;
-            color: #b6effb !important;
-            border-color: #4d8a99 !important;
-        }
-
         body.dark-mode .form-control,
         body.dark-mode .form-select {
             background-color: #3a4148 !important;
@@ -168,22 +442,172 @@
             border-color: #555 !important;
         }
 
-        body.dark-mode .form-control:focus,
-        body.dark-mode .form-select:focus {
-            background-color: #3a4148 !important;
+        body.dark-mode .modal-content {
+            background-color: #2d3238 !important;
             color: #f1f1f1 !important;
-            border-color: #0B5ED7 !important;
-            box-shadow: 0 0 0 0.25rem rgba(11, 94, 215, 0.25) !important;
+            border-color: #444 !important;
         }
 
-        /* Animaciones */
+        /* Estilos específicos para modo oscuro - Cards métricas */
+        body.dark-mode .metric-card .card-body {
+            background: transparent !important;
+        }
+
+        /* Alerts en modo oscuro */
+        body.dark-mode .alert-warning {
+            background-color: #664d03 !important;
+            border-color: #997404 !important;
+            color: #ffecb3 !important;
+        }
+
+        body.dark-mode .alert-danger {
+            background-color: #721c24 !important;
+            border-color: #a52834 !important;
+            color: #f8d7da !important;
+        }
+
+        body.dark-mode .alert-info {
+            background-color: #055160 !important;
+            border-color: #087990 !important;
+            color: #b6effb !important;
+        }
+
+        body.dark-mode .alert-success {
+            background-color: #051b11 !important;
+            border-color: #0a3622 !important;
+            color: #a3cfbb !important;
+        }
+
+        /* Badges en modo oscuro */
+        body.dark-mode .badge.bg-success {
+            background-color: #198754 !important;
+        }
+
+        body.dark-mode .badge.bg-danger {
+            background-color: #dc3545 !important;
+        }
+
+        body.dark-mode .badge.bg-warning {
+            background-color: #ffc107 !important;
+            color: #000 !important;
+        }
+
+        body.dark-mode .badge.bg-info {
+            background-color: #0dcaf0 !important;
+            color: #000 !important;
+        }
+
+        body.dark-mode .badge.bg-primary {
+            background-color: #0d6efd !important;
+        }
+
+        /* Progress bars en modo oscuro */
+        body.dark-mode .progress {
+            background-color: #495057 !important;
+        }
+
+        /* Card headers en modo oscuro */
+        body.dark-mode .card-header {
+            background-color: #3a4148 !important;
+            border-bottom-color: #555 !important;
+            color: #f1f1f1 !important;
+        }
+
+        body.dark-mode .card-header.bg-white {
+            background-color: #3a4148 !important;
+        }
+
+        /* Text muted en modo oscuro */
+        body.dark-mode .text-muted {
+            color: #adb5bd !important;
+        }
+
+        /* Borders en modo oscuro */
+        body.dark-mode .border-bottom {
+            border-bottom-color: #555 !important;
+        }
+
+        /* Dropdown en modo oscuro */
+        body.dark-mode .dropdown-menu {
+            background-color: #2d3238 !important;
+            border-color: #444 !important;
+        }
+
+        body.dark-mode .dropdown-item {
+            color: #f1f1f1 !important;
+        }
+
+        body.dark-mode .dropdown-item:hover,
+        body.dark-mode .dropdown-item:focus {
+            background-color: #3a4148 !important;
+            color: #fff !important;
+        }
+
+        /* Tables específicas para modo oscuro */
+        body.dark-mode .table-responsive {
+            background-color: #2d3238 !important;
+        }
+
+        body.dark-mode .table thead th {
+            background-color: #3a4148 !important;
+            color: #f1f1f1 !important;
+            border-color: #555 !important;
+        }
+
+        body.dark-mode .table tbody tr {
+            background-color: #2d3238 !important;
+        }
+
+        body.dark-mode .table tbody tr:hover {
+            background-color: #3a4148 !important;
+        }
+
+        body.dark-mode .table td,
+        body.dark-mode .table th {
+            border-color: #555 !important;
+        }
+
+        /* Botones en modo oscuro */
+        body.dark-mode .btn-outline-primary {
+            color: #6ea8fe !important;
+            border-color: #6ea8fe !important;
+        }
+
+        body.dark-mode .btn-outline-primary:hover {
+            background-color: #0d6efd !important;
+            border-color: #0d6efd !important;
+        }
+
+        body.dark-mode .btn-outline-secondary {
+            color: #adb5bd !important;
+            border-color: #6c757d !important;
+        }
+
+        body.dark-mode .btn-outline-secondary:hover {
+            background-color: #6c757d !important;
+            border-color: #6c757d !important;
+        }
+
+        /* Input group en modo oscuro */
+        body.dark-mode .input-group-text {
+            background-color: #3a4148 !important;
+            border-color: #555 !important;
+            color: #f1f1f1 !important;
+        }
+
+        /* Charts containers en modo oscuro */
+        body.dark-mode canvas {
+            filter: brightness(0.9);
+        }
+
+        /* Animations */
         @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(30px); }
+            from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
         .fade-in {
-            animation: fadeInUp 0.6s ease-out;
+            animation: fadeInUp 0.4s ease-out;
         }
 
         @keyframes spin {
@@ -191,36 +615,46 @@
             to { transform: rotate(360deg); }
         }
 
-        .spin { animation: spin 1s linear infinite; }
+        .spin {
+            animation: spin 1s linear infinite;
+        }
+
+        /* Additional Mobile Optimizations */
+        @media (max-width: 576px) {
+            .container-fluid {
+                padding: 0;
+            }
+
+            .main-content {
+                padding-left: 8px;
+                padding-right: 8px;
+            }
+
+            .metric-card .card-body h3 {
+                font-size: 1.25rem !important;
+            }
+
+            .metric-card .card-body p {
+                font-size: 0.875rem;
+            }
+
+            .chart-card .card-body {
+                padding: 0.75rem;
+            }
+        }
+
+        /* Loading States */
+        .loading {
+            opacity: 0.6;
+            pointer-events: none;
+        }
+
+        .spinner-border-sm {
+            width: 1rem;
+            height: 1rem;
+        }
 
         /* Estilos para modal de edición */
-        .edit-form-row {
-            display: flex;
-            gap: 24px;
-        }
-        .edit-form-col {
-            flex: 1 1 0;
-        }
-        .img-preview {
-            border: 1px solid #e3e3e3;
-            background: #fff;
-            padding: 6px;
-            border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
-            transition: box-shadow 0.3s;
-        }
-        .img-preview img {
-            transition: transform 0.3s;
-        }
-        .img-preview img:hover {
-            transform: scale(1.08) rotate(-2deg);
-        }
-
-        /* Modo oscuro para modal de edición */
-        body.dark-mode .img-preview {
-            border-color: #555;
-            background: #3a4148;
-        }
         .edit-form-row {
             display: flex;
             gap: 16px;
@@ -228,7 +662,6 @@
         .edit-form-col {
             flex: 1 1 0;
         }
-
         .img-preview {
             border: 1px solid #e3e3e3;
             background: #fff;
@@ -237,11 +670,9 @@
             box-shadow: 0 2px 8px rgba(0,0,0,0.04);
             transition: box-shadow 0.3s;
         }
-
         .img-preview img {
             transition: transform 0.3s;
         }
-
         .img-preview img:hover {
             transform: scale(1.08) rotate(-2deg);
         }
@@ -250,11 +681,6 @@
         body.dark-mode .img-preview {
             border-color: #555;
             background: #3a4148;
-        }
-
-        body.dark-mode .modal-content {
-            background-color: #2d3238 !important;
-            color: #f1f1f1 !important;
         }
 
         body.dark-mode .modal-header {
@@ -273,73 +699,10 @@
             border-top-color: #444 !important;
         }
 
-        /* Estilos para Toasts */
-        .toast {
-            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
-            border: 1px solid rgba(0, 0, 0, 0.05);
-        }
-
-        body.dark-mode .toast {
-            background-color: #374151 !important;
-            border-color: #4b5563;
-            color: #f9fafb !important;
-        }
-
-        body.dark-mode .toast .toast-body {
-            color: #f9fafb !important;
-        }
-
-        body.dark-mode .toast.text-success {
-            background-color: #065f46 !important;
-            color: #d1fae5 !important;
-        }
-
-        body.dark-mode .toast.text-success .toast-body {
-            color: #d1fae5 !important;
-        }
-
-        body.dark-mode .toast.text-danger {
-            background-color: #7f1d1d !important;
-            color: #fecaca !important;
-        }
-
-        body.dark-mode .toast.text-danger .toast-body {
-            color: #fecaca !important;
-        }
-
-        body.dark-mode .toast.text-info {
-            background-color: #0c4a6e !important;
-            color: #bae6fd !important;
-        }
-
-        body.dark-mode .toast.text-info .toast-body {
-            color: #bae6fd !important;
-        }
-
-        body.dark-mode .btn-close-dark {
-            filter: brightness(0) saturate(100%) invert(89%) sepia(6%) saturate(106%) hue-rotate(204deg) brightness(106%) contrast(106%);
-        }
-
         /* Estilos para modales de detalles */
         .info-card {
             border: 1px solid #e9ecef;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-
-        body.dark-mode .modal-content {
-            background-color: #2d3238 !important;
-            color: #f1f1f1 !important;
-            border-color: #444 !important;
-        }
-
-        body.dark-mode .modal-header {
-            background-color: #17a2b8 !important;
-            border-bottom-color: #444 !important;
-        }
-
-        body.dark-mode .modal-footer {
-            background-color: #3a4148 !important;
-            border-top-color: #444 !important;
         }
 
         body.dark-mode .info-card {
@@ -347,27 +710,26 @@
             color: #f1f1f1 !important;
             border-color: #555 !important;
         }
-
-        body.dark-mode .badge {
-            background-color: #198754 !important;
-        }
-
-        /* Responsivo */
-        @media (max-width: 768px) {
-            .metric-icon { display: none; }
-            .sidebar { min-height: auto; }
-            .edit-form-row {
-                flex-direction: column;
-                gap: 0;
-            }
-        }
     </style>
 </head>
 <body>
+    <!-- Mobile Header -->
+    <div class="mobile-header">
+        <button class="mobile-menu-btn" onclick="toggleSidebar()">
+            <i class="bi bi-list"></i>
+        </button>
+        <h5>Biblioteca Admin</h5>
+        <!-- Espacio para mantener el layout centrado -->
+        <div style="width: 48px;"></div>
+    </div>
+
+    <!-- Sidebar Overlay -->
+    <div class="sidebar-overlay" onclick="closeSidebar()"></div>
+
     <div class="container-fluid">
         <div class="row">
             <!-- Sidebar -->
-            <nav class="col-md-2 d-none d-md-block sidebar py-4">
+            <nav class="col-md-2 sidebar py-4" id="sidebar">
                 <div class="text-center mb-4">
                     <img src="{{ asset('img/LocalB/logo.jpg') }}" alt="Logo" width="50" height="50" class="mb-2 rounded-circle">
                     <h5 class="fw-bold text-white">Administrador</h5>
@@ -407,23 +769,41 @@
             </nav>
 
             <!-- Contenido Principal -->
-            <main class="col-md-10 ms-sm-auto px-4 py-3">
-                <!-- Header -->
-                <div class="d-flex justify-content-between align-items-center mb-4">
+            <main class="col-md-10 ms-sm-auto py-3 main-content">
+                <!-- Desktop Header -->
+                <div class="d-flex justify-content-between align-items-center mb-4 desktop-header">
                     <div>
                         <h1 class="h3 fw-bold mb-1">Dashboard Ejecutivo</h1>
                         <p class="text-muted mb-0">Análisis completo del sistema bibliotecario</p>
                     </div>
-                    <div class="d-flex gap-2">
+                    <div class="d-flex gap-2 flex-wrap">
                         <button class="btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#modalExportar">
-                            <i class="bi bi-download me-1"></i>Exportar
+                            <i class="bi bi-download me-1"></i><span class="d-none d-sm-inline">Exportar</span>
                         </button>
                         <button class="btn btn-primary btn-sm" onclick="actualizarDatos()">
-                            <i class="bi bi-arrow-clockwise me-1"></i>Actualizar
+                            <i class="bi bi-arrow-clockwise me-1"></i><span class="d-none d-sm-inline">Actualizar</span>
                         </button>
                         <button id="toggleTheme" class="btn btn-outline-secondary btn-sm">
                             <i class="bi bi-moon-stars"></i>
                         </button>
+                    </div>
+                </div>
+
+                <!-- Mobile Header Content -->
+                <div class="d-md-none mb-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h2 class="h4 fw-bold mb-1">Dashboard</h2>
+                            <small class="text-muted">Sistema bibliotecario</small>
+                        </div>
+                        <div class="d-flex gap-1">
+                            <button class="btn btn-outline-primary btn-sm" onclick="actualizarDatos()">
+                                <i class="bi bi-arrow-clockwise"></i>
+                            </button>
+                            <button class="btn btn-outline-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#modalExportar">
+                                <i class="bi bi-download"></i>
+                            </button>
+                        </div>
                     </div>
                 </div>
 
@@ -453,7 +833,7 @@
                 <div id="panel-dashboard" class="fade-in">
                     <!-- Métricas Principales -->
                     <div class="row mb-4 g-3">
-                        <div class="col-lg-3 col-md-6">
+                        <div class="col-xl-3 col-lg-6 col-md-6 col-sm-6">
                             <div class="metric-card h-100" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
                                 <div class="card-body text-white position-relative">
                                     <h3 class="fw-bold mb-1" id="prestamosTotales">{{ \App\Models\Prestamo::count() }}</h3>
@@ -468,7 +848,7 @@
                             </div>
                         </div>
 
-                        <div class="col-lg-3 col-md-6">
+                        <div class="col-xl-3 col-lg-6 col-md-6 col-sm-6">
                             <div class="metric-card h-100" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
                                 <div class="card-body text-white position-relative">
                                     <h3 class="fw-bold mb-1" id="usuariosActivos">{{ \App\Models\Usuario::count() }}</h3>
@@ -483,7 +863,7 @@
                             </div>
                         </div>
 
-                        <div class="col-lg-3 col-md-6">
+                        <div class="col-xl-3 col-lg-6 col-md-6 col-sm-6">
                             <div class="metric-card h-100" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
                                 <div class="card-body text-white position-relative">
                                     <h3 class="fw-bold mb-1" id="devolucionesTotales">{{ \App\Models\Devolucion::count() }}</h3>
@@ -498,7 +878,7 @@
                             </div>
                         </div>
 
-                        <div class="col-lg-3 col-md-6">
+                        <div class="col-xl-3 col-lg-6 col-md-6 col-sm-6">
                             <div class="metric-card h-100" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);">
                                 <div class="card-body text-white position-relative">
                                     <h3 class="fw-bold mb-1" id="sancionesActivas">{{ \App\Models\Sancion::where('estado', 'activa')->count() }}</h3>
@@ -514,16 +894,16 @@
                         </div>
                     </div>
 
-                    <!-- Gráficos -->
+                    <!-- Gráficos Responsive -->
                     <div class="row mb-4">
-                        <div class="col-lg-8">
+                        <div class="col-lg-8 col-md-12 mb-3 mb-lg-0">
                             <div class="chart-card">
-                                <div class="card-header bg-white border-0 d-flex justify-content-between align-items-center">
-                                    <div>
+                                <div class="card-header bg-white border-0 d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center">
+                                    <div class="mb-2 mb-sm-0">
                                         <h6 class="fw-bold mb-1">Actividad del Sistema</h6>
                                         <small class="text-muted">Últimos 30 días</small>
                                     </div>
-                                    <select class="form-select form-select-sm" id="tipoGrafico" onchange="actualizarGrafico()" style="width: 140px;">
+                                    <select class="form-select form-select-sm" id="tipoGrafico" onchange="actualizarGrafico()" style="width: auto; min-width: 140px;">
                                         <option value="prestamos">Préstamos</option>
                                         <option value="devoluciones">Devoluciones</option>
                                         <option value="usuarios">Usuarios</option>
@@ -535,7 +915,7 @@
                             </div>
                         </div>
 
-                        <div class="col-lg-4">
+                        <div class="col-lg-4 col-md-12">
                             <div class="chart-card h-100">
                                 <div class="card-header bg-white border-0">
                                     <h6 class="fw-bold mb-1">Estado de Préstamos</h6>
@@ -548,12 +928,12 @@
                         </div>
                     </div>
 
-                    <!-- Estadísticas Compactas -->
+                    <!-- Estadísticas Responsive -->
                     <div class="row mb-4">
-                        <div class="col-lg-4">
+                        <div class="col-lg-4 col-md-6 mb-3 mb-lg-0">
                             <div class="chart-card h-100">
                                 <div class="card-header bg-white border-0">
-                                    <h6 class="fw-bold mb-1">Indicadores de desempeño del sistema</h6>
+                                    <h6 class="fw-bold mb-1">Indicadores del Sistema</h6>
                                 </div>
                                 <div class="card-body">
                                     <div class="mb-3">
@@ -624,7 +1004,7 @@
                             </div>
                         </div>
 
-                        <div class="col-lg-4">
+                        <div class="col-lg-4 col-md-6 mb-3 mb-lg-0">
                             <div class="chart-card h-100">
                                 <div class="card-header bg-white border-0">
                                     <h6 class="fw-bold mb-1">Top Libros</h6>
@@ -638,7 +1018,7 @@
                             </div>
                         </div>
 
-                        <div class="col-lg-4">
+                        <div class="col-lg-4 col-md-12">
                             <div class="chart-card h-100">
                                 <div class="card-header bg-white border-0">
                                     <h6 class="fw-bold mb-1">Alertas</h6>
@@ -661,14 +1041,15 @@
                         </div>
                     </div>
 
-                    <!-- Generador de Reportes -->
+                    <!-- Generador de Reportes Responsive -->
                     <div class="chart-card mb-4">
                         <div class="card-header bg-white border-0">
                             <h6 class="fw-bold mb-1">Generador de Reportes</h6>
                         </div>
                         <div class="card-body">
                             <form class="row g-3" onsubmit="event.preventDefault(); generarReporte();">
-                                <div class="col-md-3">
+                                <div class="col-lg-3 col-md-6 col-sm-6">
+                                    <label class="form-label small d-md-none">Tipo de Reporte</label>
                                     <select class="form-select" id="tipoReporte">
                                         <option value="prestamos">Préstamos</option>
                                         <option value="devoluciones">Devoluciones</option>
@@ -677,15 +1058,17 @@
                                         <option value="libros">Libros más solicitados</option>
                                     </select>
                                 </div>
-                                <div class="col-md-3">
-                                    <input type="date" class="form-control" id="fechaInicio">
+                                <div class="col-lg-3 col-md-6 col-sm-6">
+                                    <label class="form-label small d-md-none">Fecha Inicio</label>
+                                    <input type="date" class="form-control" id="fechaInicio" placeholder="Fecha inicio">
                                 </div>
-                                <div class="col-md-3">
-                                    <input type="date" class="form-control" id="fechaFin">
+                                <div class="col-lg-3 col-md-6 col-sm-6">
+                                    <label class="form-label small d-md-none">Fecha Fin</label>
+                                    <input type="date" class="form-control" id="fechaFin" placeholder="Fecha fin">
                                 </div>
-                                <div class="col-md-3">
+                                <div class="col-lg-3 col-md-6 col-sm-6">
                                     <button type="submit" class="btn btn-primary w-100">
-                                        <i class="bi bi-table me-1"></i>Generar Reporte
+                                        <i class="bi bi-table me-1"></i><span class="d-none d-sm-inline">Generar </span>Reporte
                                     </button>
                                 </div>
                             </form>
@@ -920,108 +1303,164 @@
                     </div>
                 </div>
 
-                <!-- Panel Cuentas -->
+                <!-- Panel Cuentas Responsive -->
                 <div id="panel-cuentas" style="display:none;">
-                    <div class="d-flex justify-content-between align-items-center mb-4">
-                        <h2 class="fw-bold">Gestión de Cuentas</h2>
-                        <div class="row mb-4">
-                            <div class="col-md-6">
-                                <div class="input-group">
-                                            <input type="text" id="searchTrabajadores" class="form-control" placeholder="Buscar bibliotecarios...">
-                                            <button class="btn btn-outline-secondary" type="button" onclick="search('trabajadores')">
-                                                <i class="bi bi-search"></i>
-                                            </button>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <div class="input-group">
-                                            <input type="text" id="searchUsuarios" class="form-control" placeholder="Buscar usuarios...">
-                                            <button class="btn btn-outline-secondary" type="button" onclick="search('usuarios')">
-                                                <i class="bi bi-search"></i>
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-                        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalTrabajador">
+                    <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4">
+                        <div class="mb-3 mb-md-0">
+                            <h2 class="fw-bold h3">Gestión de Cuentas</h2>
+                            <p class="text-muted mb-0 d-none d-md-block">Administra bibliotecarios y usuarios</p>
+                        </div>
+                        <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#modalTrabajador">
                             <i class="bi bi-person-plus me-2"></i>Agregar Bibliotecario
                         </button>
                     </div>
-                    <h4>Trabajadores</h4>
-                    <div class="table-responsive mb-4">
-                        <table class="table table-bordered align-middle">
-                            <thead>
-                                <tr>
-                                    <th>Usuario</th>
-                                    <th>Nombre</th>
-                                    <th>Rol</th>
-                                    <th>Email</th>
-                                    <th>Acciones</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach($trabajadores as $trabajador)
-                                    <tr>
-                                        <td>{{ $trabajador->usuario }}</td>
-                                        <td>{{ $trabajador->nombre }}</td>
-                                        <td>Bibliotecario</td>
-                                        <td>{{ $trabajador->email }}</td>
-                                        <td>
-                                            <button class="btn btn-sm btn-info me-1" onclick="verDetallesTrabajador({{ $trabajador->id_trabajador }})">
-                                                <i class="bi bi-eye"></i>
-                                            </button>
-                                            <form action="{{ route('trabajadores.destroy', $trabajador) }}" method="POST" style="display:inline;">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button class="btn btn-sm btn-danger" onclick="return confirm('¿Eliminar esta cuenta?')">
-                                                    <i class="bi bi-trash"></i>
-                                                </button>
-                                            </form>
-                                        </td>
-                                    </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
+
+                    <!-- Filtros de búsqueda responsive -->
+                    <div class="row mb-4">
+                        <div class="col-md-6 mb-3 mb-md-0">
+                            <div class="input-group">
+                                <input type="text" id="searchTrabajadores" class="form-control" placeholder="Buscar bibliotecarios...">
+                                <button class="btn btn-outline-secondary" type="button" onclick="search('trabajadores')">
+                                    <i class="bi bi-search"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="input-group">
+                                <input type="text" id="searchUsuarios" class="form-control" placeholder="Buscar usuarios...">
+                                <button class="btn btn-outline-secondary" type="button" onclick="search('usuarios')">
+                                    <i class="bi bi-search"></i>
+                                </button>
+                            </div>
+                        </div>
                     </div>
-                    <h4>Usuarios</h4>
-                    <div class="table-responsive">
-                        <table class="table table-bordered align-middle">
-                            <thead>
-                                <tr>
-                                    <th>Nombre</th>
-                                    <th>Apellido</th>
-                                    <th>Email</th>
-                                    <th>Fecha de Registro</th>
-                                    <th>Acciones</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach($usuarios as $usuario)
+
+                    <!-- Sección Trabajadores -->
+                    <div class="chart-card mb-4">
+                        <div class="card-header bg-white border-0 d-flex justify-content-between align-items-center">
+                            <h4 class="h6 fw-bold mb-0">Bibliotecarios</h4>
+                            <span class="badge bg-primary">{{ count($trabajadores) }}</span>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table table-bordered align-middle mb-0">
+                                <thead class="table-light">
                                     <tr>
-                                        <td>{{ $usuario->nombre }}</td>
-                                        <td>{{ $usuario->apellido }}</td>
-                                        <td>{{ $usuario->email }}</td>
-                                        <td>{{ $usuario->fecha_registro }}</td>
-                                        <td>
-                                            <button class="btn btn-sm btn-info me-1" onclick="verDetallesUsuario({{ $usuario->id_usuario }})">
-                                                <i class="bi bi-eye"></i>
-                                            </button>
-                                            <form action="{{ route('usuarios.destroy', $usuario) }}" method="POST" style="display:inline;">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button class="btn btn-sm btn-danger" onclick="return confirm('¿Eliminar esta cuenta?')">
-                                                    <i class="bi bi-trash"></i>
-                                                </button>
-                                            </form>
-                                        </td>
+                                        <th>Usuario</th>
+                                        <th>Nombre</th>
+                                        <th class="d-none d-md-table-cell">Rol</th>
+                                        <th class="d-none d-lg-table-cell">Email</th>
+                                        <th>Acciones</th>
                                     </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
+                                </thead>
+                                <tbody>
+                                    @foreach($trabajadores as $trabajador)
+                                        <tr>
+                                            <td>
+                                                <strong class="d-block">{{ $trabajador->usuario }}</strong>
+                                                <small class="text-muted d-md-none">{{ $trabajador->email }}</small>
+                                            </td>
+                                            <td>{{ $trabajador->nombre }}</td>
+                                            <td class="d-none d-md-table-cell">
+                                                <span class="badge bg-info">Bibliotecario</span>
+                                            </td>
+                                            <td class="d-none d-lg-table-cell">{{ $trabajador->email }}</td>
+                                            <td>
+                                                <div class="d-flex gap-1">
+                                                    <button class="btn btn-sm btn-info" onclick="verDetallesTrabajador({{ $trabajador->id_trabajador }})" title="Ver detalles">
+                                                        <i class="bi bi-eye"></i>
+                                                    </button>
+                                                    <form action="{{ route('trabajadores.destroy', $trabajador) }}" method="POST" style="display:inline;">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                        <button class="btn btn-sm btn-danger" onclick="return confirm('¿Eliminar esta cuenta?')" title="Eliminar">
+                                                            <i class="bi bi-trash"></i>
+                                                        </button>
+                                                    </form>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Sección Usuarios -->
+                    <div class="chart-card mb-4">
+                        <div class="card-header bg-white border-0 d-flex justify-content-between align-items-center">
+                            <h4 class="h6 fw-bold mb-0">Usuarios</h4>
+                            <span class="badge bg-success">{{ count($usuarios) }}</span>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table table-bordered align-middle mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Nombre</th>
+                                        <th class="d-none d-md-table-cell">Apellido</th>
+                                        <th class="d-none d-lg-table-cell">Email</th>
+                                        <th class="d-none d-xl-table-cell">Fecha Registro</th>
+                                        <th>Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach($usuarios as $usuario)
+                                        <tr>
+                                            <td>
+                                                <strong class="d-block">{{ $usuario->nombre }} {{ $usuario->apellido }}</strong>
+                                                <small class="text-muted d-md-none">{{ $usuario->email }}</small>
+                                                <small class="text-muted d-xl-none d-block">{{ date('d/m/Y', strtotime($usuario->fecha_registro)) }}</small>
+                                            </td>
+                                            <td class="d-none d-md-table-cell">{{ $usuario->apellido }}</td>
+                                            <td class="d-none d-lg-table-cell">{{ $usuario->email }}</td>
+                                            <td class="d-none d-xl-table-cell">{{ date('d/m/Y', strtotime($usuario->fecha_registro)) }}</td>
+                                            <td>
+                                                <div class="d-flex gap-1">
+                                                    <button class="btn btn-sm btn-info" onclick="verDetallesUsuario({{ $usuario->id_usuario }})" title="Ver detalles">
+                                                        <i class="bi bi-eye"></i>
+                                                    </button>
+                                                    <form action="{{ route('usuarios.destroy', $usuario) }}" method="POST" style="display:inline;">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                        <button class="btn btn-sm btn-danger" onclick="return confirm('¿Eliminar esta cuenta?')" title="Eliminar">
+                                                            <i class="bi bi-trash"></i>
+                                                        </button>
+                                                    </form>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </main>
         </div>
     </div>
+
+    <!-- Mobile Bottom Navigation -->
+    <nav class="mobile-bottom-nav">
+        <a href="#" class="bottom-nav-item active" onclick="showTabMobile('dashboard')">
+            <i class="bi bi-speedometer2"></i>
+            <span>Dashboard</span>
+        </a>
+        <a href="#" class="bottom-nav-item" onclick="showTabMobile('inventario')">
+            <i class="bi bi-book"></i>
+            <span>Inventario</span>
+        </a>
+        <a href="#" class="bottom-nav-item" onclick="showTabMobile('cuentas')">
+            <i class="bi bi-people"></i>
+            <span>Cuentas</span>
+        </a>
+        <a href="#" class="bottom-nav-item" id="toggleThemeMobile" onclick="toggleThemeMain()">
+            <i class="bi bi-moon-stars"></i>
+            <span>Tema</span>
+        </a>
+        <a href="{{ route('inicio') }}" class="bottom-nav-item">
+            <i class="bi bi-house"></i>
+            <span>Inicio</span>
+        </a>
+    </nav>
 
     <!-- Modal para Nueva Sanción -->
     <div class="modal fade" id="modalNuevaSancion" tabindex="-1" aria-labelledby="modalNuevaSancionLabel" aria-hidden="true">
@@ -1226,6 +1665,197 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script>
+        // ===== FUNCIONES MOBILE-FIRST =====
+
+        // Toggle Sidebar para Mobile
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.querySelector('.sidebar-overlay');
+
+            sidebar.classList.toggle('show');
+            overlay.classList.toggle('show');
+        }
+
+        // Cerrar Sidebar
+        function closeSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.querySelector('.sidebar-overlay');
+
+            sidebar.classList.remove('show');
+            overlay.classList.remove('show');
+        }
+
+        // Función mejorada para cambiar tabs (compatible con mobile)
+        function showTab(tabName) {
+            // Cerrar sidebar en mobile
+            if (window.innerWidth <= 768) {
+                closeSidebar();
+            }
+
+            // Ocultar todos los paneles
+            const panels = ['dashboard', 'inventario', 'cuentas', 'sanciones'];
+            panels.forEach(panel => {
+                const element = document.getElementById(`panel-${panel}`);
+                if (element) {
+                    element.style.display = 'none';
+                }
+
+                // Actualizar clases activas en sidebar
+                const tabElement = document.getElementById(`tab-${panel}`);
+                if (tabElement) {
+                    tabElement.classList.remove('active');
+                }
+            });
+
+            // Mostrar el panel seleccionado
+            const selectedPanel = document.getElementById(`panel-${tabName}`);
+            if (selectedPanel) {
+                selectedPanel.style.display = 'block';
+                selectedPanel.classList.add('fade-in');
+            }
+
+            // Activar tab en sidebar
+            const selectedTab = document.getElementById(`tab-${tabName}`);
+            if (selectedTab) {
+                selectedTab.classList.add('active');
+            }
+
+            // Actualizar bottom navigation en mobile
+            updateBottomNavigation(tabName);
+        }
+
+        // Función específica para mobile bottom navigation
+        function showTabMobile(tabName) {
+            showTab(tabName);
+        }
+
+        // Actualizar estado de bottom navigation
+        function updateBottomNavigation(activeTab) {
+            const bottomNavItems = document.querySelectorAll('.bottom-nav-item');
+            bottomNavItems.forEach(item => {
+                item.classList.remove('active');
+            });
+
+            // Encontrar y activar el item correspondiente
+            const tabMap = {
+                'dashboard': 0,
+                'inventario': 1,
+                'cuentas': 2
+            };
+
+            const index = tabMap[activeTab];
+            if (index !== undefined && bottomNavItems[index]) {
+                bottomNavItems[index].classList.add('active');
+            }
+        }
+
+        // Responsive handling
+        function handleResize() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.querySelector('.sidebar-overlay');
+
+            if (window.innerWidth > 768) {
+                // Desktop: asegurar que sidebar esté visible
+                sidebar.classList.remove('show');
+                overlay.classList.remove('show');
+            }
+        }
+
+        // Event listeners para funcionalidad móvil
+        window.addEventListener('resize', handleResize);
+        window.addEventListener('orientationchange', function() {
+            setTimeout(handleResize, 100);
+        });
+
+        // Touch gestures para sidebar (opcional)
+        let startX = 0;
+        let currentX = 0;
+        let isDragging = false;
+
+        document.addEventListener('touchstart', function(e) {
+            if (e.touches[0].clientX < 20) {
+                startX = e.touches[0].clientX;
+                isDragging = true;
+            }
+        });
+
+        document.addEventListener('touchmove', function(e) {
+            if (!isDragging) return;
+            currentX = e.touches[0].clientX;
+        });
+
+        document.addEventListener('touchend', function(e) {
+            if (!isDragging) return;
+
+            const deltaX = currentX - startX;
+            if (deltaX > 50 && window.innerWidth <= 768) {
+                toggleSidebar();
+            }
+
+            isDragging = false;
+        });
+
+        // Modo oscuro mejorado con sincronización
+        function initializeTheme() {
+            const savedTheme = localStorage.getItem('dashboardTheme') || 'light';
+            if (savedTheme === 'dark') {
+                document.body.classList.add('dark-mode');
+                updateThemeButtons('dark');
+            }
+        }
+
+        function toggleThemeMain() {
+            const body = document.body;
+            const isDark = body.classList.contains('dark-mode');
+
+            if (isDark) {
+                body.classList.remove('dark-mode');
+                localStorage.setItem('dashboardTheme', 'light');
+                updateThemeButtons('light');
+            } else {
+                body.classList.add('dark-mode');
+                localStorage.setItem('dashboardTheme', 'dark');
+                updateThemeButtons('dark');
+            }
+        }
+
+        function updateThemeButtons(theme) {
+            const desktopBtn = document.getElementById('toggleTheme');
+            const mobileBtn = document.getElementById('toggleThemeMobile');
+            const icon = theme === 'dark' ? 'bi-sun' : 'bi-moon-stars';
+
+            if (desktopBtn) {
+                desktopBtn.innerHTML = `<i class="bi ${icon}"></i>`;
+            }
+
+            if (mobileBtn) {
+                const iconElement = mobileBtn.querySelector('i');
+                if (iconElement) {
+                    iconElement.className = `bi ${icon}`;
+                }
+            }
+        }
+
+        // Event listeners para botones de tema
+        document.addEventListener('DOMContentLoaded', function() {
+            // Inicializar tema primero
+            initializeTheme();
+
+            // Luego agregar listeners
+            const desktopThemeBtn = document.getElementById('toggleTheme');
+
+            if (desktopThemeBtn) {
+                // Asegurar que no hay listeners duplicados
+                desktopThemeBtn.removeEventListener('click', toggleThemeMain);
+                desktopThemeBtn.addEventListener('click', toggleThemeMain);
+            }
+        });
+
+        // ===== FIN FUNCIONES MOBILE-FIRST =====
+    </script>
+
     <script>
         // Sistema de Toasts para notificaciones no bloqueantes
         function showToast(message, type = 'success', duration = 4000) {
@@ -1593,14 +2223,6 @@
             modal.show();
         }
 
-        // Modo oscuro
-        document.getElementById('toggleTheme').addEventListener('click', function() {
-            document.body.classList.toggle('dark-mode');
-            const isDark = document.body.classList.contains('dark-mode');
-            this.innerHTML = isDark ? '<i class="bi bi-sun"></i>' : '<i class="bi bi-moon-stars"></i>';
-            localStorage.setItem('dashboardTheme', isDark ? 'dark' : 'light');
-        });
-
         // Funciones para gestión de sanciones
         function cargarMetricasSanciones() {
             fetch("{{ route('admin.reportes.grafico') }}?tipo=metricas_sanciones")
@@ -1798,12 +2420,6 @@
 
         // Inicialización
         document.addEventListener('DOMContentLoaded', function() {
-            // Restaurar tema
-            if (localStorage.getItem('dashboardTheme') === 'dark') {
-                document.body.classList.add('dark-mode');
-                document.getElementById('toggleTheme').innerHTML = '<i class="bi bi-sun"></i>';
-            }
-
             // Establecer fechas por defecto
             const fechaFin = new Date();
             const fechaInicio = new Date();
@@ -1848,18 +2464,27 @@
                 }
             });
 
-            // Agregar atributo data-libro-id a las filas de la tabla para facilitar la búsqueda
-            const filasLibros = document.querySelectorAll('#tablaLibros tbody tr');
-            filasLibros.forEach(fila => {
-                const btnEditar = fila.querySelector('.btn-warning[onclick*="abrirModalEditarLibro"]');
-                if (btnEditar) {
-                    const onclick = btnEditar.getAttribute('onclick');
-                    const match = onclick.match(/abrirModalEditarLibro\((\d+)\)/);
-                    if (match) {
-                        fila.setAttribute('data-libro-id', match[1]);
-                    }
-                }
-            });
+            // Agregar listener para limpiar el modal cuando se cierre
+            const modalEditarLibro = document.getElementById('modalEditarLibro');
+            if (modalEditarLibro) {
+                modalEditarLibro.addEventListener('hidden.bs.modal', function() {
+                    // Solo limpiar cuando realmente se cierra, no cuando se abre
+                    setTimeout(() => {
+                        document.getElementById('formEditarLibro').reset();
+                        document.getElementById('portada_actual').style.display = 'none';
+                        restaurarScrollYLimpiarModales();
+                    }, 100);
+                });
+
+                // Prevenir reset automático al mostrar el modal
+                modalEditarLibro.addEventListener('show.bs.modal', function() {
+                    console.log('Modal de edición abriéndose...');
+                });
+
+                modalEditarLibro.addEventListener('shown.bs.modal', function() {
+                    console.log('Modal de edición completamente abierto');
+                });
+            }
 
             // Envío AJAX para agregar libro
             const libroForm = document.querySelector('#modalLibro form');
@@ -2236,69 +2861,69 @@
 
         // Función para abrir modal de editar libro
         function abrirModalEditarLibro(libroId) {
-            // Buscar el libro en la tabla actual
-            const fila = document.querySelector(`tr[data-libro-id="${libroId}"]`);
-            if (!fila) {
-                // Si no encontramos la fila, hacemos una petición AJAX para obtener los datos
-                fetch(`/admin/libros/${libroId}/edit-data`)
-                    .then(response => response.json())
-                    .then(libro => {
-                        llenarFormularioEdicion(libro);
-                        document.getElementById('formEditarLibro').action = `/admin/libros/${libroId}`;
-                        new bootstrap.Modal(document.getElementById('modalEditarLibro')).show();
-                    })
-                    .catch(error => {
-                        console.error('Error:', error);
-                        showErrorToast('Error al cargar los datos del libro');
-                    });
-                return;
-            }
+            // Limpiar formulario antes de llenarlo
+            document.getElementById('formEditarLibro').reset();
+            document.getElementById('portada_actual').style.display = 'none';
 
-            // Extraer datos de la fila de la tabla
-            const celdas = fila.getElementsByTagName('td');
-            const libro = {
-                id_libro: libroId,
-                codigo: celdas[0].textContent.trim(),
-                titulo: celdas[1].textContent.trim(),
-                autor: celdas[2].textContent.trim(),
-                categoria: celdas[3].textContent.trim(),
-                cantidad: celdas[4].textContent.trim(),
-                disponibles: celdas[5].textContent.trim(),
-                estado: celdas[6].querySelector('.badge').textContent.toLowerCase().trim(),
-                portada: celdas[7].querySelector('img') ? celdas[7].querySelector('img').src : null
-            };
-
-            llenarFormularioEdicion(libro);
-            document.getElementById('formEditarLibro').action = `/admin/libros/${libroId}`;
-            new bootstrap.Modal(document.getElementById('modalEditarLibro')).show();
+            // Hacer petición AJAX para obtener los datos completos del libro
+            fetch(`/admin/libros/${libroId}/edit-data`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Error al obtener los datos del libro');
+                    }
+                    return response.json();
+                })
+                .then(libro => {
+                    llenarFormularioEdicion(libro);
+                    document.getElementById('formEditarLibro').action = `/admin/libros/${libroId}`;
+                    new bootstrap.Modal(document.getElementById('modalEditarLibro')).show();
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showErrorToast('Error al cargar los datos del libro: ' + error.message);
+                });
         }
 
         function llenarFormularioEdicion(libro) {
-            document.getElementById('edit_codigo').value = libro.codigo || '';
-            document.getElementById('edit_titulo').value = libro.titulo || '';
-            document.getElementById('edit_autor').value = libro.autor || '';
-            document.getElementById('edit_anio_publicacion').value = libro.anio_publicacion || '';
-            document.getElementById('edit_cantidad').value = libro.cantidad || '';
-            document.getElementById('edit_disponibles').value = libro.disponibles || '';
-            document.getElementById('edit_editorial').value = libro.editorial || '';
+            console.log('Datos del libro recibidos:', libro); // Para debugging
+
+            // Llenar todos los campos del formulario con verificación
+            const campos = [
+                { id: 'edit_codigo', valor: libro.codigo },
+                { id: 'edit_titulo', valor: libro.titulo },
+                { id: 'edit_autor', valor: libro.autor },
+                { id: 'edit_anio_publicacion', valor: libro.anio_publicacion },
+                { id: 'edit_cantidad', valor: libro.cantidad },
+                { id: 'edit_disponibles', valor: libro.disponibles },
+                { id: 'edit_editorial', valor: libro.editorial }
+            ];
+
+            campos.forEach(campo => {
+                const elemento = document.getElementById(campo.id);
+                if (elemento) {
+                    elemento.value = campo.valor || '';
+                    console.log(`Campo ${campo.id} establecido a:`, elemento.value);
+                } else {
+                    console.error(`No se encontró el elemento con ID: ${campo.id}`);
+                }
+            });
 
             // Seleccionar categoría
             if (libro.categoria_id) {
-                document.getElementById('edit_categoria_id').value = libro.categoria_id;
-            } else if (libro.categoria) {
-                // Buscar por nombre de categoría
                 const selectCategoria = document.getElementById('edit_categoria_id');
-                for (let option of selectCategoria.options) {
-                    if (option.textContent.trim() === libro.categoria) {
-                        option.selected = true;
-                        break;
-                    }
+                if (selectCategoria) {
+                    selectCategoria.value = libro.categoria_id;
+                    console.log('Categoría seleccionada:', libro.categoria_id);
                 }
             }
 
             // Seleccionar estado
             const estado = libro.estado || 'disponible';
-            document.getElementById('edit_estado').value = estado;
+            const selectEstado = document.getElementById('edit_estado');
+            if (selectEstado) {
+                selectEstado.value = estado;
+                console.log('Estado seleccionado:', estado);
+            }
 
             // Mostrar portada actual si existe
             if (libro.portada) {
@@ -2307,6 +2932,8 @@
             } else {
                 document.getElementById('portada_actual').style.display = 'none';
             }
+
+            console.log('Formulario completamente llenado'); // Para debugging
         }
 
         // Manejar envío del formulario de edición
@@ -2315,15 +2942,30 @@
 
             const formData = new FormData(this);
             const actionUrl = this.action;
+            const submitBtn = this.querySelector('button[type="submit"]');
+            const originalBtnText = submitBtn.innerHTML;
+
+            // Deshabilitar botón y mostrar loading
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status"></span>Actualizando...';
 
             fetch(actionUrl, {
                 method: 'POST',
                 body: formData,
                 headers: {
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                    'Accept': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
                 }
             })
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) {
+                    return response.json().then(data => {
+                        throw new Error(data.message || 'Error en la solicitud');
+                    });
+                }
+                return response.json();
+            })
             .then(data => {
                 if (data.success) {
                     // Cerrar modal
@@ -2333,14 +2975,21 @@
                     showSuccessToast('Libro actualizado correctamente');
 
                     // Recargar la página para mostrar los cambios
-                    location.reload();
+                    setTimeout(() => {
+                        location.reload();
+                    }, 1000);
                 } else {
                     showErrorToast(data.message || 'Error al actualizar el libro');
                 }
             })
             .catch(error => {
                 console.error('Error:', error);
-                showErrorToast('Error al actualizar el libro');
+                showErrorToast('Error al actualizar el libro: ' + error.message);
+            })
+            .finally(() => {
+                // Restaurar botón
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalBtnText;
             });
         });
     </script>
@@ -2382,11 +3031,12 @@
                         <div class="edit-form-row mb-3">
                             <div class="edit-form-col mb-3 mb-md-0">
                                 <label for="edit_anio_publicacion" class="form-label">Año de publicación</label>
-                                <input type="number" class="form-control" id="edit_anio_publicacion" name="anio_publicacion">
+                                <input type="number" class="form-control" id="edit_anio_publicacion" name="anio_publicacion" min="1000" max="2099">
                             </div>
                             <div class="edit-form-col">
                                 <label for="edit_categoria_id" class="form-label">Categoría</label>
                                 <select class="form-select" id="edit_categoria_id" name="categoria_id">
+                                    <option value="">Seleccionar categoría</option>
                                     @foreach($categorias as $categoria)
                                         <option value="{{ $categoria->id_categoria }}">{{ $categoria->nombre }}</option>
                                     @endforeach

@@ -1,9 +1,8 @@
 <?php
-// filepath: database/migrations/xxxx_xx_xx_xxxxxx_create_usuarios_table.php
+
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
-use Illuminate\Support\Facades\DB;
 
 class CreateUsuariosTable extends Migration
 {
@@ -16,7 +15,10 @@ class CreateUsuariosTable extends Migration
             $table->string('dni', 8)->unique();
             $table->string('codigo_estudiante', 20)->unique();
             $table->string('email', 150)->unique();
-            $table->date('fecha_registro')->default(DB::raw('CURRENT_DATE'));
+
+            // ✅ Sin default: Laravel puede asignar la fecha en código (ahora()->toDateString())
+            $table->date('fecha_registro')->nullable();
+
             $table->string('password');
             $table->timestamps();
         });
@@ -27,3 +29,4 @@ class CreateUsuariosTable extends Migration
         Schema::dropIfExists('usuario');
     }
 }
+
