@@ -1640,8 +1640,7 @@
                         <label for="estadoLibro" class="form-label text-dark">Estado</label>
                         <select class="form-select" id="estadoLibro" name="estado" required>
                             <option value="disponible">Disponible</option>
-                            <option value="prestado">Prestado</option>
-                            <option value="dañado">Dañado</option>
+                            
                         </select>
                     </div>
                     <div class="col-md-6 mb-3">
@@ -3438,8 +3437,7 @@
                                 <label for="edit_estado" class="form-label">Estado</label>
                                 <select class="form-select" id="edit_estado" name="estado" required>
                                     <option value="disponible">Disponible</option>
-                                    <option value="prestado">Prestado</option>
-                                    <option value="dañado">Dañado</option>
+
                                 </select>
                             </div>
                             <div class="edit-form-col">
