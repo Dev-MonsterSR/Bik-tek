@@ -314,7 +314,10 @@ class HandController {
 
         this.enabled = true;
         await this.camera.start();
-        document.getElementById('hand-control-container').style.display = 'block';
+        const container = document.getElementById('hand-control-container');
+        if (container) {
+            container.style.display = 'block';
+        }
         console.log('Hand control started');
     }
 
@@ -323,16 +326,21 @@ class HandController {
         if (this.camera) {
             this.camera.stop();
         }
-        document.getElementById('hand-control-container').style.display = 'none';
-        this.cursorElement.style.display = 'none';
+        const container = document.getElementById('hand-control-container');
+        if (container) {
+            container.style.display = 'none';
+        }
+        if (this.cursorElement) {
+            this.cursorElement.style.display = 'none';
+        }
         console.log('Hand control stopped');
     }
 
-    toggle() {
+    async toggle() {
         if (this.enabled) {
             this.stop();
         } else {
-            this.start();
+            await this.start();
         }
     }
 }
