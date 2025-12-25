@@ -77,6 +77,12 @@ Para desactivar el control por gestos:
 - No se graban ni almacenan imágenes de tu cámara.
 - El acceso a la cámara se detiene completamente cuando desactivas el control.
 
+## Seguridad
+
+- El sistema incluye protecciones para evitar clics accidentales en elementos sensibles como botones de envío de formularios.
+- Los enlaces externos requieren el atributo `data-gesture-safe` para ser activados por gestos.
+- Para entornos de producción, se recomienda alojar las librerías de MediaPipe localmente en lugar de usar CDN.
+
 ## Resolución de Problemas
 
 **El control no inicia:**

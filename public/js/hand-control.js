@@ -17,6 +17,7 @@ class HandController {
         this.isPointing = false;
         this.lastScrollTime = 0;
         this.scrollCooldown = 300; // ms
+        this.scrollAmount = 200; // px - amount to scroll per swipe gesture
     }
 
     async initialize() {
@@ -238,14 +239,14 @@ class HandController {
             if (verticalMovement > 0.3) {
                 // Swipe down - scroll down
                 window.scrollBy({
-                    top: 200,
+                    top: this.scrollAmount,
                     behavior: 'smooth'
                 });
                 this.showGestureFeedback('⬇️ Scroll Down');
             } else if (verticalMovement < -0.3) {
                 // Swipe up - scroll up
                 window.scrollBy({
-                    top: -200,
+                    top: -this.scrollAmount,
                     behavior: 'smooth'
                 });
                 this.showGestureFeedback('⬆️ Scroll Up');
@@ -255,27 +256,44 @@ class HandController {
 
     simulateClick(x, y) {
         const element = document.elementFromPoint(x, y);
-        if (element) {
-            // Visual feedback
-            this.cursorElement.style.background = 'rgba(40, 167, 69, 0.9)';
-            this.showGestureFeedback('👆 Click');
-
-            // Simulate click
-            const clickEvent = new MouseEvent('click', {
-                view: window,
-                bubbles: true,
-                cancelable: true,
-                clientX: x,
-                clientY: y
-            });
-            element.dispatchEvent(clickEvent);
-
-            // Reset after click
-            setTimeout(() => {
-                this.isPointing = false;
-                this.cursorElement.style.background = 'rgba(11, 94, 215, 0.7)';
-            }, 300);
+        if (!element) {
+            return;
         }
+
+        // Validate element is safe to click
+        // Avoid clicking on certain sensitive elements without explicit user action
+        const tagName = element.tagName.toLowerCase();
+        const isFormSubmit = tagName === 'button' && element.type === 'submit';
+        const isLink = tagName === 'a';
+        const isInput = tagName === 'input' || tagName === 'textarea';
+        
+        // For safety, only allow clicks on non-destructive elements
+        // or elements explicitly marked as gesture-safe
+        if (isFormSubmit || (isLink && !element.hasAttribute('data-gesture-safe'))) {
+            console.log('Gesture click blocked on sensitive element:', element);
+            this.showGestureFeedback('⚠️ Elemento protegido');
+            return;
+        }
+
+        // Visual feedback
+        this.cursorElement.style.background = 'rgba(40, 167, 69, 0.9)';
+        this.showGestureFeedback('👆 Click');
+
+        // Simulate click
+        const clickEvent = new MouseEvent('click', {
+            view: window,
+            bubbles: true,
+            cancelable: true,
+            clientX: x,
+            clientY: y
+        });
+        element.dispatchEvent(clickEvent);
+
+        // Reset after click
+        setTimeout(() => {
+            this.isPointing = false;
+            this.cursorElement.style.background = 'rgba(11, 94, 215, 0.7)';
+        }, 300);
     }
 
     showGestureFeedback(text) {
